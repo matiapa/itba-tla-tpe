@@ -1,6 +1,8 @@
 #include "y.tab.h"
 #include <stdio.h>
 
+int yyparse();
+
 int main(void) {
     
     yyparse();
