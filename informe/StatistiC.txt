@@ -1,0 +1,68 @@
+-------------------
+	BÁSICO
+-------------------
+
+> Tipos de datos:
+number, list, text, boolean
+
+> Delimitadores:
+Instruccion: \n
+Bloques: do / end
+
+> Operadores:
+Aritméticos: +, -, *, /, (%|mod), (^|**), (e|exp)
+Relacionales: <, >, <=, >=, eq, neq
+Lógicos: and, or, not
+Lista: l[n], n in l
+
+> Asignación:
+number n = 2
+list l = [2, 3, 4]
+text t = "abc"
+
+> Condicional:
+if exp do
+  ...
+else
+  ...
+end
+
+> Iteración:
+while exp do
+ ...
+end
+
+> Entrada/salida:
+read number into n
+read text into t
+write number n
+write text t
+
+
+-------------------
+   ESTADÍSTICA
+-------------------
+
+Operadores de lista:
+'measure' of list
+measure: mean, median, mode, stdev, range, qtr1, qtr3, inter-qtr, perc-n, gcd y mcm
+
+Operadores numericos:
+n comb p, n perm p, n!
+
+
+-------------------
+  EJEMPLOS
+-------------------
+
+list l = [1,2,3]
+
+number n
+read number into n
+
+text t
+read text into t
+
+write perc-n of l
+
+write "Listo"
