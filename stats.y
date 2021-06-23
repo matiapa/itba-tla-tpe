@@ -1,9 +1,13 @@
 %{
+#include <stdio.h>
 
+#if YYBISON
+int yylex();
+#endif
 %}
 
 %token START
-%token ADDITION SUBSTRACTION DIVISION MULTIPLICATION MOD POWER 
+%token ADDITION SUBSTRACTION DIVISION MULTIPLICATION MOD POWER
 %token LT GT LEQ GEQ NEQ EQ
 %token AND OR NOT
 %token NUMBER TEXT BOOLEAN ARRAY
@@ -14,20 +18,20 @@
 %token ASSIGN
 %token IF WHILE DO END ELSE
 %token EOL
+%token NUMBER_TYPE TEXT_TYPE BOOLEAN_TYPE ARRAY_TYPE
 
-%start START
 %%
-
-type: NUMBER
-    | TEXT
-    | BOOLEAN
-    ;
 
 expression: '(' '(' NUMBER relation NUMBER ')' complex_expression ')'
             | '(' '(' BOOLEAN ')' complex_expression ')'
             | '(' BOOLEAN ')'
             | '(' NUMBER complex_expression NUMBER ')'
             ;
+
+type: NUMBER
+    | TEXT
+    | BOOLEAN
+    ;
 
 relation: LT 
         | GT 
@@ -46,4 +50,8 @@ logical: AND
         | NOT
         ;
 
+%%
 
+void yyerror(char *s){
+    printf("Syntax error");
+}
