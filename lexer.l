@@ -18,6 +18,8 @@ int add_variable(int type, char *name);
 ^boolean    { state = BOOLEAN_TYPE; }
 ^list       { state = ARRAY_TYPE; }
 
+=           { return ASSIGN; }
+
 [a-zA-Z_][a-zA-Z0-9_]* {
     if(state != LOOKUP){
         add_variable(state, yytext);
@@ -32,11 +34,13 @@ int add_variable(int type, char *name);
     }
 }
 
+.*        ;       /* Ignore everything else */
+
 %%
 
 struct variable {
-    char *variable_name;
     int variable_type;
+    char *variable_name;
     struct variable *next;
 };
 

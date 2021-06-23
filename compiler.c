@@ -8,3 +8,10 @@ int main(void) {
     printf("Succesfully parsed");
 
 }
+
+
+void yyerror(char *s){
+
+    printf("Syntax error");
+
+}
