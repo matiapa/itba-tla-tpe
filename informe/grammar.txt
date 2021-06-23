@@ -27,9 +27,9 @@ T -> I lines else \n lines end \n | I lines end \n
 
 V -> W lines end \n
 
-F -> mean | median | mode | stdev | range | qtr1 | qtr3 | inter-qtr | perc-n | gcd | mcm
+F -> mean | median | mode | stdev | range | qtr1 | qtr3 | inter-qtr | gcd | mcm
 
-opeartion -> F of list | number comb number | number perm number | n!
+opeartion -> F of list | number comb number | number perm number | number !
 
 asign -> type variable \n | type variable = arg \n | type variable = opeartion \n
 
