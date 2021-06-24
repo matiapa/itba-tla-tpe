@@ -24,7 +24,9 @@ int fileno(FILE * stream);
 
 [a-zA-Z_][a-zA-Z0-9_]*      { strcpy(yylval.string, yytext); return SYMBOL_NAME; }
 
-[ \t] ;
+[ \t]                       ;   // Ignore whitespaaces
+#.*                         ;   // Ignore comments
+
 <<EOF>>                     { static int once = 0; return once++ ? 0 : EOL; }
 
 .           { return yytext[0]; };

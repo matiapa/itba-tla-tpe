@@ -1,6 +1,8 @@
 text saludo = "Hola mundo"
 write saludo
 
+# Este es un comentario
+
 number n1 = 2 * 3
 number n2 = n1 >= 4
 write n1

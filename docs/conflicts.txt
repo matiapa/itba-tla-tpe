@@ -10,7 +10,3 @@ Pero se produciría un conflicto RR entre [1] y [3] al tenerse un SYMBOL_NAME.
 Habría que saber antes de aplicar una reducción si SYMBOL_NAME corresponde a una variable
 de tipo numérico o texto. Como esto no es posible (creo) lo solucioné no permitiendo realizar
 un write de una expresión directamente, solo se puede imprimir texto o una variable.
-
---------------------------------------------------
-
-Las líneas en blanco dan sintax error y el programa debe terminar con una línea en blanco (no debería)
