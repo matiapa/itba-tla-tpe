@@ -5,15 +5,19 @@ int yyparse();
 
 int main(void) {
     
+    fprintf(stderr, "int main() {\n");
+
     yyparse();
 
-    printf("Succesfully parsed");
+    fprintf(stderr, "\n}");
+
+    printf("\nSuccesfully parsed\n");
 
 }
 
 
 void yyerror(char *s){
 
-    printf("Syntax error");
+    printf("\nSyntax error\n");
 
 }

@@ -1,6 +1,5 @@
 %{
 #include "y.tab.h"
-extern int yylval;
 
 %}
 %%
@@ -11,9 +10,13 @@ extern int yylval;
 ^list       { return ARRAY_TYPE; }
 ^write      { return WRITE; }
 
-[a-zA-Z_]+  { return TEXT; }
-[0-9]+      { yylval = yytext; return NUMBER; }
+[a-zA-Z_]+  { strcpy(yylval.string, yytext); return TEXT; }
+[0-9]+      { strcpy(yylval.string, yytext); return NUMBER; }
 
-.           { return yytext[0]; };
+[ \t] ;
+
+.           { printf("--%c--", yytext[0]); return yytext[0]; };
+
+[\n]        { return EOL; };
 
 %%

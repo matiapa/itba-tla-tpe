@@ -17,11 +17,21 @@ void assign_variable(char * name, char * value);
 
 %}
 
+%union {
+    char string[1024];
+    double array[1024];
+    double number;
+    char boolean;
+}
+
 %token START
 %token ADDITION SUBSTRACTION DIVISION MULTIPLICATION MOD POWER
 %token LT GT LEQ GEQ NEQ EQ
 %token AND OR NOT
-%token NUMBER TEXT BOOLEAN ARRAY
+%token <string> NUMBER 
+%token <string> TEXT
+%token <string> BOOLEAN 
+%token <string> ARRAY 
 %token MEAN MEDIAN MODE STDEV RANGE QTR1 QTR3 INTER_QTR GCD MCM
 %token COMB PERM
 %token FACT
@@ -29,22 +39,26 @@ void assign_variable(char * name, char * value);
 %token ASSIGN
 %token IF WHILE DO END ELSE
 %token EOL
+%token TEXT_TYPE NUMBER_TYPE BOOLEAN_TYPE ARRAY_TYPE
 
-%token NUMBER_TYPE TEXT_TYPE BOOLEAN_TYPE ARRAY_TYPE
 %token SYMBOL_NAME
 %token WRITE
+
+%type <number> type
+%type <string> value
+
 %%
 
 program: instruction program | instruction;
-instruction: declare '\n' | assign '\n' | write '\n';
+instruction: declare EOL | assign EOL | write EOL;
 
-declare: type TEXT { declare_variable($1, (char *)  $2); P(" = %s", $2); };
+declare: type TEXT { declare_variable($1, $2); P(" %s;\n", $2); };
 type: NUMBER_TYPE   { P("double")  }
     | TEXT_TYPE     { P("char *")  }
     | BOOLEAN_TYPE  { P("char")    }
     | ARRAY_TYPE    { P("double *")};
 
-assign: TEXT '=' value { assign_variable($1, $2); P("%s = %s", $1, $2); };
+assign: TEXT '=' value { assign_variable($1, $3); P("%s = %s;\n", $1, $3); };
 value: NUMBER | TEXT ;
 
 write: WRITE TEXT;
@@ -100,7 +114,7 @@ void assign_variable(char * name, char * value) {
         exit(-1);
     }
 
-    if (type == NUMBER_TYPE && atoi(value) == 0) {
+    if (type == NUMBER_TYPE && atof(value) == 0) {
         printf("ERROR: Can't assign text to %s\n", name);
         exit(-1);
     }
