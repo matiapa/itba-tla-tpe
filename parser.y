@@ -72,16 +72,17 @@ int recursion = 0;
 
 %%
 program: instruction program | EOL program | FIN;
-block: instruction block | EOL block | END;
+block: instruction block | EOL block | END ;
 instruction: full_declare | assign | write
-    | recursion block { P("\n}\n");};
+    | recursion block EOL { P("\n}\n");};
 
-recursion: IF expression DO { P("%s (%s) {\n", $1, $2);};
+recursion: IF expression DO { P("%s (%s) {\n", $1, $2);}
+    | WHILE expression DO { P("%s (%s) {\n", $1, $2);};
 
 full_declare: declare '=' value { assign_variable($1, $3, attr_type); P(" %s = %s;\n", $1, $3); }
     | declare { P(" %s;\n", $1); };
 
-declare: type SYMBOL_NAME { strcpy($$, $2); declare_variable($1, $2); }
+declare: type SYMBOL_NAME { strcpy($$, $2); declare_variable($1, $2); };
 
 type: NUMBER_TYPE   { P("double")  }
     | TEXT_TYPE     { P("char *")  }
@@ -92,7 +93,7 @@ assign: SYMBOL_NAME '=' value { assign_variable($1, $3, attr_type); P("%s = %s;\
 value: expression {attr_type = EXPRESSION;} 
     | TEXT {attr_type = TEXT;} ;
 
-write: WRITE TEXT                           { P("printf(\"%%s\", %s);\n", $2); }
+write: WRITE TEXT                           { P("printf(\"%%s\\n\", %s);\n", $2); }
     | WRITE SYMBOL_NAME                     { write_symbol($2);} 
     | WRITE expression BIN_OP expression    { write_expression($2, $3, $4); };  
 
