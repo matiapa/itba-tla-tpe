@@ -5,10 +5,10 @@ int fileno(FILE * stream);
 %}
 %%
 
-^number     { return NUMBER_TYPE; }
-^text       { return TEXT_TYPE; }
-^boolean    { return BOOLEAN_TYPE; }
-^list       { return ARRAY_TYPE; }
+^number     { yylval.number = NUMBER_TYPE; return NUMBER_TYPE; }
+^text       { yylval.number = TEXT_TYPE; return TEXT_TYPE; }
+^boolean    { yylval.number = BOOLEAN_TYPE; return BOOLEAN_TYPE; }
+^list       { yylval.number = ARRAY_TYPE; return ARRAY_TYPE; }
 ^write      { return WRITE; }
 
 [a-zA-Z_][a-zA-Z0-9_]*      { strcpy(yylval.string, yytext); return SYMBOL_NAME; }

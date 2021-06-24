@@ -3,18 +3,36 @@
 #include <stdlib.h>
 #include <string.h>
 
-int yydebug=1;
-int yylex();
-void yyerror(char *s);
+// Extern prototypes
+
+extern int yylex();
+extern void yyerror(char *s);
 
 extern FILE * out;
 extern void * malloc();
 
+// Local prototypes
+
 int lookup_variable(char * name);
 void declare_variable(int type, char * name);
 void assign_variable(char * name, char * value);
+void write_symbol(char * name);
+
+char * type_desc(int type);
+void assert_type(int type, char * var);
+
+// Auxiliar macros
 
 #define P(...) fprintf(out, ##__VA_ARGS__);
+
+#define ERROR(...) fprintf(stderr, "\x1b[31mERROR: ");\
+    fprintf(stderr, ##__VA_ARGS__);\
+    fprintf(stderr, "\x1b[0m\n");\
+    exit(-1);
+
+// Global variables
+
+int yydebug=1;
 
 %}
 
@@ -71,10 +89,10 @@ expression: expression BIN_OP expression    { sprintf($$, "%s %s %s", $1, $2, $3
     | UNI_OP expression                     { sprintf($$, "%s %s", $1, $2);  }
     | '(' expression ')'                    { sprintf($$, "( %s )", $2);     }
     | NUMBER                                { sprintf($$, "%s", $1);         };
-    | SYMBOL_NAME                           { sprintf($$, "%s", $1);         };
+    | SYMBOL_NAME                           { assert_type(NUMBER, $1); sprintf($$, "%s", $1); };
 
 write: WRITE TEXT                           { P("printf(\"%%s\", %s);\n", $2); }
-    | WRITE expression                      { P("printf(\"%%f\\n\", (double) (%s));\n", $2); };
+    | WRITE SYMBOL_NAME                     { write_symbol($2); };
 
 %%
 
@@ -89,17 +107,17 @@ struct variable *variable_list;
 
 int lookup_variable(char *name){
     struct variable *vp = variable_list;
-
     for(; vp; vp = vp->next) {
         if(strcmp(vp->variable_name, name) == 0)
             return vp->variable_type;
     }
-
     return -1;
 }
 
 void declare_variable(int type, char *name) {
     struct variable *vp;
+
+    // printf("DEBUG: %s is %d", name, type);
 
     if(lookup_variable(name) != -1){
         printf("ERROR: Variable '%s' already defined\n", name);
@@ -119,14 +137,42 @@ void declare_variable(int type, char *name) {
 
 void assign_variable(char * name, char * value) {
     int type = lookup_variable(name);
-
     if (type == -1) {
-        printf("ERROR: Variable '%s' is not defined\n", name);
-        exit(-1);
+        ERROR("'%s' is not defined\n", name);
     }
-
     if (type == NUMBER_TYPE && atof(value) == 0) {
-        printf("ERROR: Can't assign text to %s\n", name);
-        exit(-1);
+        ERROR("Can't assign text to %s\n", name);
+    }
+}
+
+char * type_desc(int type) {
+    if (type == TEXT_TYPE) return "text";
+    if (type == NUMBER_TYPE) return "number";
+    if (type == BOOLEAN_TYPE) return "boolean";
+    if (type == ARRAY_TYPE) return "array";
+    return NULL;
+}
+
+void assert_type(int expected_type, char * var) {
+    int type = lookup_variable(var);
+    if(type == -1) {
+        ERROR("'%s' is not defined", var);
+    }
+    if(type != expected_type) {
+        ERROR("'%s' must be %s", var, type_desc(expected_type));
+    }
+}
+
+void write_symbol(char * name) {
+    int type = lookup_variable(name);
+    // printf("DEBUG: %s is %d", name, type);
+    if(type == -1) {
+        ERROR("'%s' is not defined", name);
+    }
+    if(type == NUMBER_TYPE) {
+        P("printf(\"%%f\\n\", (double) (%s));\n", name);
+    }
+    if(type == TEXT_TYPE) {
+        P("printf(\"%%s\\n\", %s);\n", name);
     }
 }
