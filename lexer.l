@@ -21,13 +21,14 @@ int fileno(FILE * stream);
 "or"		                { strcpy(yylval.string, "||"); return BIN_OP; }
 "not"		                { strcpy(yylval.string, "!"); return BIN_OP; }
 [-~]                        { strcpy(yylval.string, yytext); return UNI_OP; }
+"if"                        { strcpy(yylval.string, yytext); return IF; }
+"do\n"                       { strcpy(yylval.string, yytext); return DO; }
+"end"                       { strcpy(yylval.string, yytext); return END; }
 
 [a-zA-Z_][a-zA-Z0-9_]*      { strcpy(yylval.string, yytext); return SYMBOL_NAME; }
 
-[ \t]                       ;   // Ignore whitespaaces
-#.*                         ;   // Ignore comments
-
-<<EOF>>                     { static int once = 0; return once++ ? 0 : EOL; }
+[ \t] ;
+<<EOF>>                     { static int once = 0; return once++ ? 0 : FIN; }
 
 .           { return yytext[0]; };
 [\n]        { return EOL; };

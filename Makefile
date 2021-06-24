@@ -1,6 +1,6 @@
 PHONY = all clean
-CCFLAGS=-Wall -Wno-unused-function -pedantic -std=c99
-YLFLAGS= -ll
+CCFLAGS=-Wall -Wno-unused-function -pedantic -std=c99 -DYYDEBUG=1
+YLFLAGS= -ll -ly
 MKDIR_BIN = bin
 
 all: bin parser
