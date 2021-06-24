@@ -29,10 +29,6 @@ void assign_variable(char * name, char * value);
 %token ADDITION SUBSTRACTION DIVISION MULTIPLICATION MOD POWER
 %token LT GT LEQ GEQ NEQ EQ
 %token AND OR NOT
-%token <string> NUMBER 
-%token <string> TEXT
-%token <string> BOOLEAN 
-%token <string> ARRAY 
 %token MEAN MEDIAN MODE STDEV RANGE QTR1 QTR3 INTER_QTR GCD MCM
 %token COMB PERM
 %token FACT
@@ -43,10 +39,15 @@ void assign_variable(char * name, char * value);
 %token TEXT_TYPE NUMBER_TYPE BOOLEAN_TYPE ARRAY_TYPE
 
 %token <string> SYMBOL_NAME
+%token <string> BIN_OP UNI_OP
+%token <string> NUMBER TEXT BOOLEAN ARRAY
 %token WRITE
 
 %type <number> type
-%type <string> declare value
+%type <string> declare value expression
+
+%left BIN_OP
+%nonassoc UNI_OP
 
 %%
 
@@ -64,10 +65,16 @@ type: NUMBER_TYPE   { P("double")  }
     | ARRAY_TYPE    { P("double *")};
 
 assign: SYMBOL_NAME '=' value { assign_variable($1, $3); P("%s = %s;\n", $1, $3); };
-value: NUMBER | TEXT ;
+value: expression | TEXT ;
 
-write: WRITE TEXT   { P("printf(\"%%s\", %s);\n", $2); }
-    | WRITE NUMBER  { P("printf(\"%%s\", \"%s\");\n", $2); };
+expression: expression BIN_OP expression    { sprintf($$, "%s %s %s", $1, $2, $3); }
+    | UNI_OP expression                     { sprintf($$, "%s %s", $1, $2);  }
+    | '(' expression ')'                    { sprintf($$, "( %s )", $2);     }
+    | NUMBER                                { sprintf($$, "%s", $1);         };
+    | SYMBOL_NAME                           { sprintf($$, "%s", $1);         };
+
+write: WRITE TEXT                           { P("printf(\"%%s\", %s);\n", $2); }
+    | WRITE expression                      { P("printf(\"%%f\\n\", (double) (%s));\n", $2); };
 
 %%
 
@@ -93,8 +100,6 @@ int lookup_variable(char *name){
 
 void declare_variable(int type, char *name) {
     struct variable *vp;
-
-    printf("DEBUG: Adding variable %s of type %d\n", name, type);
 
     if(lookup_variable(name) != -1){
         printf("ERROR: Variable '%s' already defined\n", name);

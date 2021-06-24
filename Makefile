@@ -11,7 +11,7 @@ OBJ = lex.yy.c y.tab.c y.tab.h
 
 parser:
 	lex lexer.l
-	yacc -d parser.y
+	yacc -d -Wcounterexamples parser.y
 	$(CC) $(CCFLAGS) lex.yy.c y.tab.c compiler.c $(YLFLAGS) -o $(MKDIR_BIN)/compiler
 	rm -rf $(OBJ)
 

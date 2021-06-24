@@ -15,6 +15,9 @@ int fileno(FILE * stream);
 \"[^\"]+\"                  { strcpy(yylval.string, yytext); return TEXT; }
 [-]?[0-9]+(\.[0-9]+)?       { strcpy(yylval.string, yytext); return NUMBER; }
 
+[-+\*/<>%]|[<>]=            { strcpy(yylval.string, yytext); return BIN_OP; }
+[-~]                        { strcpy(yylval.string, yytext); return UNI_OP; }
+
 [ \t] ;
 
 .           { return yytext[0]; };
