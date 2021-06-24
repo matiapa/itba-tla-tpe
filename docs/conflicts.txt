@@ -13,8 +13,4 @@ un write de una expresión directamente, solo se puede imprimir texto o una vari
 
 --------------------------------------------------
 
-El siguiente snippet NO FUNCIONA:
-number n1 = 2
-number n2 = 2 * n1
-
 Las líneas en blanco dan sintax error y el programa debe terminar con una línea en blanco (no debería)

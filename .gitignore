@@ -4,6 +4,7 @@ bin/*
 lex.yy.c
 y.tab.c
 y.tab.h
+examples/test.stc
 
 # Program out
 temp.c

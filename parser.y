@@ -71,7 +71,7 @@ int attr_type = -1;
 
 %%
 
-program: instruction program | instruction;
+program: instruction program | EOL program | instruction | EOL;
 instruction: full_declare EOL | assign EOL | write EOL;
 
 full_declare: declare '=' value { assign_variable($1, $3, attr_type); P(" %s = %s;\n", $1, $3); }

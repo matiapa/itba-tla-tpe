@@ -34,6 +34,7 @@ int main(int argc, char ** argv) {
 
     yyparse();
 
+    fprintf(out, "return 0;\n");
     fprintf(out, "\n}");
     fclose(out);
 
