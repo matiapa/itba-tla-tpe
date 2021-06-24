@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+enum { EXPRESSION };
+
 // Extern prototypes
 
 extern int yylex();
@@ -15,8 +17,9 @@ extern void * malloc();
 
 int lookup_variable(char * name);
 void declare_variable(int type, char * name);
-void assign_variable(char * name, char * value);
+void assign_variable(char * name, char * value, int attr_type);
 void write_symbol(char * name);
+void write_expression(char * exp1, char * op, char * exp2);
 
 char * type_desc(int type);
 void assert_type(int type, char * var);
@@ -34,6 +37,8 @@ void assert_type(int type, char * var);
 
 int yydebug=1;
 
+int attr_type = -1;
+
 %}
 
 %union {
@@ -44,9 +49,8 @@ int yydebug=1;
 }
 
 %token START
-%token ADDITION SUBSTRACTION DIVISION MULTIPLICATION MOD POWER
-%token LT GT LEQ GEQ NEQ EQ
-%token AND OR NOT
+%token <string> LEQ GEQ NEQ EQ 
+%token <string> AND OR NOT
 %token MEAN MEDIAN MODE STDEV RANGE QTR1 QTR3 INTER_QTR GCD MCM
 %token COMB PERM
 %token FACT
@@ -57,22 +61,22 @@ int yydebug=1;
 %token TEXT_TYPE NUMBER_TYPE BOOLEAN_TYPE ARRAY_TYPE
 
 %token <string> SYMBOL_NAME
-%token <string> BIN_OP UNI_OP
+%token <string> BIN_OP UNI_OP LOG_OP
 %token <string> NUMBER TEXT BOOLEAN ARRAY
 %token WRITE
 
 %type <number> type
-%type <string> declare value expression
+%type <string> declare value expression op
 
-%left BIN_OP
-%nonassoc UNI_OP
+%left BIN_OP '<' '>' LEQ GEQ NEQ EQ AND OR
+%nonassoc UNI_OP NOT
 
 %%
 
 program: instruction program | instruction;
 instruction: full_declare EOL | assign EOL | write EOL;
 
-full_declare: declare '=' value { assign_variable($1, $3); P(" %s = %s;\n", $1, $3); }
+full_declare: declare '=' value { assign_variable($1, $3, attr_type); P(" %s = %s;\n", $1, $3); }
     | declare { P(" %s;\n", $1); };
 
 declare: type SYMBOL_NAME { strcpy($$, $2); declare_variable($1, $2); }
@@ -82,17 +86,29 @@ type: NUMBER_TYPE   { P("double")  }
     | BOOLEAN_TYPE  { P("char")    }
     | ARRAY_TYPE    { P("double *")};
 
-assign: SYMBOL_NAME '=' value { assign_variable($1, $3); P("%s = %s;\n", $1, $3); };
-value: expression | TEXT ;
-
-expression: expression BIN_OP expression    { sprintf($$, "%s %s %s", $1, $2, $3); }
-    | UNI_OP expression                     { sprintf($$, "%s %s", $1, $2);  }
-    | '(' expression ')'                    { sprintf($$, "( %s )", $2);     }
-    | NUMBER                                { sprintf($$, "%s", $1);         };
-    | SYMBOL_NAME                           { assert_type(NUMBER, $1); sprintf($$, "%s", $1); };
+assign: SYMBOL_NAME '=' value { assign_variable($1, $3, attr_type); P("%s = %s;\n", $1, $3); };
+value: expression {attr_type = EXPRESSION;} 
+    | TEXT {attr_type = TEXT;} ;
 
 write: WRITE TEXT                           { P("printf(\"%%s\", %s);\n", $2); }
-    | WRITE SYMBOL_NAME                     { write_symbol($2); };
+    | WRITE SYMBOL_NAME                     { write_symbol($2);};        
+
+expression: '(' expression ')'              { sprintf($$, "( %s )", $2);}
+    | NOT expression                        { sprintf($$, "!%s", $2);}
+    | expression op expression              { sprintf($$, "%s %s %s", $1, $2, $3);}
+    | NUMBER                                { sprintf($$, "%s", $1);}
+    | SYMBOL_NAME                           { assert_type(NUMBER_TYPE, $1); sprintf($$, "%s", $1);};
+
+op: '<' { strcpy($$, "<"); }
+    | '>' { strcpy($$, ">"); }
+    | LEQ { strcpy($$, "<="); }
+    | GEQ { strcpy($$, ">="); }
+    | NEQ { strcpy($$, "!="); }
+    | EQ  { strcpy($$, "=="); }
+    | AND { strcpy($$, "&&"); }
+    | OR  { strcpy($$, "||"); }
+    | BIN_OP
+    ;
 
 %%
 
@@ -135,12 +151,12 @@ void declare_variable(int type, char *name) {
     variable_list = vp;
 }
 
-void assign_variable(char * name, char * value) {
+void assign_variable(char * name, char * value, int attr_type) {
     int type = lookup_variable(name);
     if (type == -1) {
         ERROR("'%s' is not defined\n", name);
     }
-    if (type == NUMBER_TYPE && atof(value) == 0) {
+    if (type == NUMBER_TYPE && atof(value) == 0 && attr_type == TEXT) {
         ERROR("Can't assign text to %s\n", name);
     }
 }

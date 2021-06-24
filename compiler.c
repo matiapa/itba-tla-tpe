@@ -46,7 +46,7 @@ int main(int argc, char ** argv) {
 
 void yyerror(char *s){
 
-    printf("\nSyntax error\n");
+    printf("%s", s);
 
     exit(-1);
 
