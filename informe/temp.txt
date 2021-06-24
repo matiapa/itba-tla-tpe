@@ -1,0 +1,28 @@
+
+expression: '(' '(' NUMBER relation NUMBER ')' complex_expression ')'
+    | '(' '(' BOOLEAN ')' complex_expression ')'
+    | '(' BOOLEAN ')'
+    | '(' NUMBER complex_expression NUMBER ')'
+    ;
+
+type: NUMBER
+    | TEXT
+    | BOOLEAN
+    ;
+
+relation: LT 
+    | GT 
+    | LEQ 
+    | GEQ 
+    | NEQ 
+    | EQ
+    ;
+
+complex_expression: logical expression complex_expression
+    | logical expression
+    ;
+
+logical: AND 
+    | OR 
+    | NOT
+    ;

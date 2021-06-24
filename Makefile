@@ -1,5 +1,5 @@
 PHONY = all clean
-CCFLAGS=-Wall -pedantic -std=c99
+CCFLAGS=-Wall #-pedantic -std=c99
 YLFLAGS= -ll
 MKDIR_BIN = bin
 
