@@ -14,16 +14,13 @@ int fileno(FILE * stream);
 \"[^\"]+\"                  { strcpy(yylval.string, yytext); return TEXT; }
 [-]?[0-9]+(\.[0-9]+)?       { strcpy(yylval.string, yytext); return NUMBER; }
 
-[-+\*/%]                  { strcpy(yylval.string, yytext); return BIN_OP; }
+[-+\*/%<>]|<=|>=            { strcpy(yylval.string, yytext); return BIN_OP; }
+"neq"		                { strcpy(yylval.string, "!="); return BIN_OP; }
+"eq"		                { strcpy(yylval.string, "=="); return BIN_OP; }
+"and"		                { strcpy(yylval.string, "&&"); return BIN_OP; }
+"or"		                { strcpy(yylval.string, "||"); return BIN_OP; }
+"not"		                { strcpy(yylval.string, "!"); return BIN_OP; }
 [-~]                        { strcpy(yylval.string, yytext); return UNI_OP; }
-[<>]                        { return yytext[0]; }
-"<="                        { strcpy(yylval.string, yytext); return LEQ; }
-">="                        { strcpy(yylval.string, yytext); return GEQ; }
-"neq"		                { strcpy(yylval.string, yytext); return NEQ; }
-"eq"		                { strcpy(yylval.string, yytext); return EQ; }
-"and"		                { strcpy(yylval.string, yytext); return AND; }
-"or"		                { strcpy(yylval.string, yytext); return OR; }
-"not"		                { strcpy(yylval.string, yytext); return NOT; }
 
 [a-zA-Z_][a-zA-Z0-9_]*      { strcpy(yylval.string, yytext); return SYMBOL_NAME; }
 

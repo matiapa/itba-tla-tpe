@@ -49,27 +49,25 @@ int attr_type = -1;
 }
 
 %token START
-%token <string> LEQ GEQ NEQ EQ 
-%token <string> AND OR NOT
 %token MEAN MEDIAN MODE STDEV RANGE QTR1 QTR3 INTER_QTR GCD MCM
-%token COMB PERM
-%token FACT
+%token COMB PERM FACT
 %token OF
+
 %token ASSIGN
 %token IF WHILE DO END ELSE
 %token EOL
 %token TEXT_TYPE NUMBER_TYPE BOOLEAN_TYPE ARRAY_TYPE
-
-%token <string> SYMBOL_NAME
-%token <string> BIN_OP UNI_OP LOG_OP
-%token <string> NUMBER TEXT BOOLEAN ARRAY
 %token WRITE
 
-%type <number> type
-%type <string> declare value expression op
+%token <string> SYMBOL_NAME
+%token <string> BIN_OP UNI_OP
+%token <string> NUMBER TEXT BOOLEAN ARRAY
 
-%left BIN_OP '<' '>' LEQ GEQ NEQ EQ AND OR
-%nonassoc UNI_OP NOT
+%type <number> type
+%type <string> declare value expression
+
+%left BIN_OP
+%nonassoc UNI_OP
 
 %%
 
@@ -93,22 +91,11 @@ value: expression {attr_type = EXPRESSION;}
 write: WRITE TEXT                           { P("printf(\"%%s\", %s);\n", $2); }
     | WRITE SYMBOL_NAME                     { write_symbol($2);};        
 
-expression: '(' expression ')'              { sprintf($$, "( %s )", $2);}
-    | NOT expression                        { sprintf($$, "!%s", $2);}
-    | expression op expression              { sprintf($$, "%s %s %s", $1, $2, $3);}
-    | NUMBER                                { sprintf($$, "%s", $1);}
-    | SYMBOL_NAME                           { assert_type(NUMBER_TYPE, $1); sprintf($$, "%s", $1);};
-
-op: '<' { strcpy($$, "<"); }
-    | '>' { strcpy($$, ">"); }
-    | LEQ { strcpy($$, "<="); }
-    | GEQ { strcpy($$, ">="); }
-    | NEQ { strcpy($$, "!="); }
-    | EQ  { strcpy($$, "=="); }
-    | AND { strcpy($$, "&&"); }
-    | OR  { strcpy($$, "||"); }
-    | BIN_OP
-    ;
+expression: '(' expression ')'              { sprintf($$, "( %s )", $2); }
+    | UNI_OP expression                     { sprintf($$, "%s%s", $1, $2); }
+    | expression BIN_OP expression          { sprintf($$, "%s %s %s", $1, $2, $3); }
+    | NUMBER                                { sprintf($$, "%s", $1); }
+    | SYMBOL_NAME                           { assert_type(NUMBER_TYPE, $1); sprintf($$, "%s", $1); };
 
 %%
 
