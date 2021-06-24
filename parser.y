@@ -38,6 +38,7 @@ void assert_type(int type, char * var);
 int yydebug=1;
 
 int attr_type = -1;
+int recursion = 0;
 
 %}
 
@@ -54,8 +55,8 @@ int attr_type = -1;
 %token OF
 
 %token ASSIGN
-%token IF WHILE DO END ELSE
-%token EOL
+%token <string> IF WHILE DO END ELSE
+%token EOL FIN
 %token TEXT_TYPE NUMBER_TYPE BOOLEAN_TYPE ARRAY_TYPE
 %token WRITE
 
@@ -70,9 +71,12 @@ int attr_type = -1;
 %nonassoc UNI_OP
 
 %%
+program: instruction program | instruction FIN ;
+block: instruction block | instruction ;
+instruction: full_declare EOL | assign EOL | write EOL | EOL
+    | recursion block END { P("\n}\n");};
 
-program: instruction program | EOL program | instruction | EOL;
-instruction: full_declare EOL | assign EOL | write EOL;
+recursion: IF expression DO { P("%s (%s) {\n", $1, $2);};
 
 full_declare: declare '=' value { assign_variable($1, $3, attr_type); P(" %s = %s;\n", $1, $3); }
     | declare { P(" %s;\n", $1); };
@@ -89,7 +93,8 @@ value: expression {attr_type = EXPRESSION;}
     | TEXT {attr_type = TEXT;} ;
 
 write: WRITE TEXT                           { P("printf(\"%%s\", %s);\n", $2); }
-    | WRITE SYMBOL_NAME                     { write_symbol($2);};        
+    | WRITE SYMBOL_NAME                     { write_symbol($2);} 
+    | WRITE expression BIN_OP expression    { write_expression($2, $3, $4); };  
 
 expression: '(' expression ')'              { sprintf($$, "( %s )", $2); }
     | UNI_OP expression                     { sprintf($$, "%s%s", $1, $2); }
@@ -178,4 +183,8 @@ void write_symbol(char * name) {
     if(type == TEXT_TYPE) {
         P("printf(\"%%s\\n\", %s);\n", name);
     }
+}
+
+void write_expression(char * exp1, char * op, char * exp2) {
+    P("printf(\"%%f\\n\", (double) (%s %s %s));\n", exp1, op, exp2);
 }
