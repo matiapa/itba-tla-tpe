@@ -7,13 +7,14 @@ int yydebug=1;
 int yylex();
 void yyerror(char *s);
 
+extern FILE * out;
 extern void * malloc();
 
 int lookup_variable(char * name);
 void declare_variable(int type, char * name);
 void assign_variable(char * name, char * value);
 
-#define P(...) fprintf(stderr, ##__VA_ARGS__);
+#define P(...) fprintf(out, ##__VA_ARGS__);
 
 %}
 
@@ -41,27 +42,32 @@ void assign_variable(char * name, char * value);
 %token EOL
 %token TEXT_TYPE NUMBER_TYPE BOOLEAN_TYPE ARRAY_TYPE
 
-%token SYMBOL_NAME
+%token <string> SYMBOL_NAME
 %token WRITE
 
 %type <number> type
-%type <string> value
+%type <string> declare value
 
 %%
 
 program: instruction program | instruction;
-instruction: declare EOL | assign EOL | write EOL;
+instruction: full_declare EOL | assign EOL | write EOL;
 
-declare: type TEXT { declare_variable($1, $2); P(" %s;\n", $2); };
+full_declare: declare '=' value { assign_variable($1, $3); P(" %s = %s;\n", $1, $3); }
+    | declare { P(" %s;\n", $1); };
+
+declare: type SYMBOL_NAME { strcpy($$, $2); declare_variable($1, $2); }
+
 type: NUMBER_TYPE   { P("double")  }
     | TEXT_TYPE     { P("char *")  }
     | BOOLEAN_TYPE  { P("char")    }
     | ARRAY_TYPE    { P("double *")};
 
-assign: TEXT '=' value { assign_variable($1, $3); P("%s = %s;\n", $1, $3); };
+assign: SYMBOL_NAME '=' value { assign_variable($1, $3); P("%s = %s;\n", $1, $3); };
 value: NUMBER | TEXT ;
 
-write: WRITE TEXT;
+write: WRITE TEXT   { P("printf(\"%%s\", %s);\n", $2); }
+    | WRITE NUMBER  { P("printf(\"%%s\", \"%s\");\n", $2); };
 
 %%
 

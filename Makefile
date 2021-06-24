@@ -1,5 +1,5 @@
 PHONY = all clean
-CCFLAGS=-Wall #-pedantic -std=c99
+CCFLAGS=-Wall -Wno-unused-function -pedantic -std=c99
 YLFLAGS= -ll
 MKDIR_BIN = bin
 
@@ -12,7 +12,7 @@ OBJ = lex.yy.c y.tab.c y.tab.h
 parser:
 	lex lexer.l
 	yacc -d parser.y
-	$(CC) $(YLFLAGS) $(CCFLAGS) lex.yy.c y.tab.c compiler.c -o $(MKDIR_BIN)/compiler
+	$(CC) $(CCFLAGS) lex.yy.c y.tab.c compiler.c $(YLFLAGS) -o $(MKDIR_BIN)/compiler
 	rm -rf $(OBJ)
 
 bin: $(shell mkdir -p $(MKDIR_BIN))
