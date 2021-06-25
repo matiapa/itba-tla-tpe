@@ -13,7 +13,10 @@ void print_print(node_t * node);
 void print_var(node_t * node);
 
 void read_tree(node_list * program, FILE * file) {
+    
+    #ifdef YYDEBUG
     printf("Empezando con el translate de código\n");
+    #endif
     out = file;
     node_list * aux = program;
 
@@ -27,7 +30,9 @@ void read_tree(node_list * program, FILE * file) {
                 print_print(nodo->instruction);
                 break;
             default:
+                #ifdef YYDEBUG
                 printf("Algo salio mal\n");
+                #endif                
                 break;
         }
         aux = aux->next;

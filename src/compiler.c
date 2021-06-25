@@ -36,8 +36,13 @@ int main(int argc, char ** argv) {
     fprintf(out, "int main() {\n");
 
     yyparse(&program);
-
-    check_and_set_variables(program);
+    if (check_and_set_variables(program)==-1)
+    {
+        printf("failure occured while checking variable validity\n");
+        exit(-1);
+    }
+    
+    
 
     read_tree(program, out);
 

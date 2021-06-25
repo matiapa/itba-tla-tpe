@@ -8,6 +8,8 @@
 #define MAX_VAR_NAME_LENGTH 256
 
 
+int error=0;
+
 typedef struct var_node {
     int var_type;
     char name[MAX_VAR_NAME_LENGTH];
@@ -22,8 +24,9 @@ void check_and_set_variables_internal(node_list * tree,var_node * var_list);
 void free_list(var_node * list);
 int check_if_exists(var_node * list,char * name);
 
-void check_and_set_variables(node_list * tree){
+int check_and_set_variables(node_list * tree){
     check_and_set_variables_internal(tree,NULL);
+    return error;
 }
 
 void check_and_set_variables_internal(node_list * tree,var_node * var_list){
@@ -38,7 +41,7 @@ void check_and_set_variables_internal(node_list * tree,var_node * var_list){
                     if (check_if_exists(var_list,variable_node_var->name)!=-1)
                     {
                         printf("Var already declared %s\n",variable_node_var->name);
-                        //exit out of the program?;
+                        error=-1;
                     }
                     var_list=add_to_list(var_list,create_var_node(variable_node_var->type,variable_node_var->name));
                 }else{
@@ -46,7 +49,7 @@ void check_and_set_variables_internal(node_list * tree,var_node * var_list){
                     if (type==-1)
                     {
                         printf("Var not declared yet %s\n",variable_node_var->name);
-                        //exit out of the program?
+                        error=-1;
                     }
 
                     variable_node_var->type=type;
@@ -54,9 +57,13 @@ void check_and_set_variables_internal(node_list * tree,var_node * var_list){
                 }
                 break;
             default:
+                #ifdef YYDEBUG
                 printf("Algo salio mal var checker\n");
+                #endif
                 break;
         }
+
+       
         aux = aux->next;
     }
     free_list(var_list);

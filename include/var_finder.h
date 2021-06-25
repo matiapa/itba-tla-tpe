@@ -3,7 +3,7 @@
 
 
 
-void check_and_set_variables(node_list * tree);
+int check_and_set_variables(node_list * tree);
 
 #endif
 
