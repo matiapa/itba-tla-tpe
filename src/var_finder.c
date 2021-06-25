@@ -1,5 +1,5 @@
-#include "var_finder.h"
-#include "tree.h"
+#include "../include/tree.h"
+#include "../include/var_finder.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,7 +12,7 @@ typedef struct var_node {
     int var_type;
     char name[MAX_VAR_NAME_LENGTH];
     int references;
-    var_node * next;
+    struct var_node * next;
 } var_node;
 
 
@@ -32,18 +32,21 @@ void check_and_set_variables_internal(node_list * tree,var_node * var_list){
         instruction_node * nodo = (instruction_node *)aux->node;
         switch(nodo->instruction->type) {
             case VARIABLE_NODE:
-                variable_node* variable_node_var=(variable_node *)nodo;
+                ;
+                variable_node* variable_node_var=(variable_node *)nodo->instruction;
                 if (variable_node_var->declared==TRUE){
                     if (check_if_exists(var_list,variable_node_var->name)!=-1)
                     {
-                        /* tirar error */
+                        printf("Var already declared %s\n",variable_node_var->name);
+                        //exit out of the program?;
                     }
                     var_list=add_to_list(var_list,create_var_node(variable_node_var->type,variable_node_var->name));
                 }else{
                     int type =check_if_exists(var_list,variable_node_var->name);
                     if (type==-1)
                     {
-                        /* tirar error */
+                        printf("Var not declared yet %s\n",variable_node_var->name);
+                        //exit out of the program?
                     }
 
                     variable_node_var->type=type;
