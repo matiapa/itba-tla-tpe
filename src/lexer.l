@@ -9,6 +9,7 @@ int fileno(FILE * stream);
 ^number     { yylval.number = NUMBER_TYPE; return NUMBER_TYPE; }
 ^text       { yylval.number = TEXT_TYPE; return TEXT_TYPE; }
 ^boolean    { yylval.number = BOOLEAN_TYPE; return BOOLEAN_TYPE; }
+write       { return WRITE; }
 
 \"[^\"]+\"                  { strcpy(yylval.string, yytext); return TEXT; }
 [-]?[0-9]+(\.[0-9]+)?       { strcpy(yylval.string, yytext); return NUMBER; }

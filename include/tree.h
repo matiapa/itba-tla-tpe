@@ -4,6 +4,8 @@
 #define TRUE 1
 #define FALSE 0
 
+enum { EXPRESSION };
+
 typedef enum {
   STRING_NODE = 0,
   CONSTANT_NODE,
@@ -35,14 +37,14 @@ typedef struct node_list{
 typedef struct variable_node {
     node_type type;
     int declared;
-    char * var_type;
+    int var_type;
     char * name;
     node_t * value;
 } variable_node;
 
 typedef struct expression_node {
     node_type type;
-    int expression_type;
+    int expression_type; // puede ser de tipo TEXT o de tipo NUMBER
     char * expression;
 } expression_node;
 
@@ -69,14 +71,17 @@ typedef struct print_node {
     node_t * content; // esto puede ser una variable_node o algo de tipo expression_node
 } print_node;
 
-node_t * declare_variable_node(char * name, char * var_type);
+node_t * declare_variable_node(char * name, int var_type);
 node_t * add_value_variable(node_t * var_node, node_t * expression);
 node_t * assign_variable_node(char * name, node_t * expression);
+node_t * add_variable_reference(char * name);
 
 node_t * add_expression(char * expression, int expression_type);
 node_t * add_instruction_node(node_t * node);
 node_t * add_instruction_list_node(node_t * node);
 node_t * add_element_to_list(node_list * list, node_t * element);
+
+node_t * add_print_node(node_t * content);
 
 #endif
 

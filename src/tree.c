@@ -13,14 +13,13 @@ node_t * add_expression(char * expression, int expression_type) {
     return (node_t *)expression_node;
 }
 
-node_t * declare_variable_node(char * name, char * var_type) {
+node_t * declare_variable_node(char * name, int var_type) {
     variable_node * node = calloc(1, sizeof(variable_node));
     node->type = VARIABLE_NODE;
     node->name = malloc(strlen(name) + 1);
-    node->var_type = malloc(strlen(var_type) + 1);
-    node->declared = FALSE;
+    node->var_type = var_type;
+    node->declared = TRUE;
     strcpy(node->name, name);
-    strcpy(node->var_type, var_type);
 
     return (node_t *)node;
 }
@@ -33,8 +32,17 @@ node_t * add_value_variable(node_t * past_node, node_t * expression) {
     node->value = expression;
     node->declared = TRUE;
     node->type = VARIABLE_NODE;
-    node->var_type = malloc(strlen(var_node->var_type) + 1);
-    strcpy(node->var_type, var_node->var_type);
+    node->var_type = var_node->var_type;
+
+    return (node_t *)node;
+}
+
+node_t * add_variable_reference(char * name) {
+    variable_node * node = calloc(1, sizeof(variable_node));
+    node->name = malloc(strlen(name) + 1);
+    strcpy(node->name, name);
+    node->declared = FALSE;
+    node->type = VARIABLE_NODE;
 
     return (node_t *)node;
 }
@@ -45,7 +53,7 @@ node_t * assign_variable_node(char * name, node_t * expression) {
     variable_node * node = calloc(1, sizeof(variable_node));
     node->type = VARIABLE_NODE;
     node->name = malloc(strlen(name) + 1);
-    node->declared = TRUE;
+    node->declared = FALSE;
     node->value = expression;
     strcpy(node->name, name);
 
@@ -69,7 +77,6 @@ node_t * add_instruction_list_node(node_t * node) {
 
 node_t * add_element_to_list(node_list * list, node_t * element) {
     node_list * current_node = list;
-
     node_list * new_node = (node_list *)add_instruction_list_node(element);
 
     if (current_node->node == NULL) {
