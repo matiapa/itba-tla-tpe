@@ -1,5 +1,5 @@
 PHONY = all clean
-CCFLAGS=-Wall -Wno-unused-function -pedantic -std=c99 -DYYDEBUG=1
+CCFLAGS=-Wall -Wno-unused-function -pedantic -std=c99 #-DYYDEBUG=1
 YLFLAGS= -ll -ly
 MKDIR_BIN = bin
 
@@ -22,9 +22,9 @@ else
 endif
 
 parser:
-	lex lexer.l
-	yacc -d -Wcounterexamples parser.y
-	$(CC) $(CCFLAGS) lex.yy.c y.tab.c compiler.c $(YLFLAGS) -o $(MKDIR_BIN)/compiler
+	lex lexer_tree.l
+	yacc -d parser_tree.y
+	$(CC) $(CCFLAGS) tree.c lex.yy.c y.tab.c compiler.c $(YLFLAGS) -o $(MKDIR_BIN)/compiler
 	rm -rf $(OBJ)
 
 bin: $(shell mkdir -p $(MKDIR_BIN))

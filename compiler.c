@@ -1,14 +1,23 @@
+#include "tree.h"
 #include "y.tab.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdlib.h>
 
-int yyparse();
+int yyparse(node_list ** program);
 
 extern FILE * yyin;
 FILE * out;
 
+void print_var(node_t * node) {
+    variable_node * var = (variable_node *) node;
+    expression_node * exp = (expression_node *)(var->value);
+
+    printf("%s %s = %s;\n", var->var_type, var->name, exp->expression);
+}
+
 int main(int argc, char ** argv) {
+    node_list * program;
 
     if (argc == 1) {
         printf("Reading program from stdin\n");
@@ -32,7 +41,13 @@ int main(int argc, char ** argv) {
     fprintf(out, "#include <stdio.h>\n");
     fprintf(out, "int main() {\n");
 
-    yyparse();
+    yyparse(&program);
+
+    instruction_node * instruction = (instruction_node *)program->node;
+    // variable_node * variable = (variable_node *)instruction->instruction;
+
+    //print_var(instruction->instruction);
+
 
     fprintf(out, "return 0;\n");
     fprintf(out, "\n}");
@@ -45,7 +60,7 @@ int main(int argc, char ** argv) {
 }
 
 
-void yyerror(char *s){
+void yyerror(node_list ** program, char *s){
 
     printf("%s", s);
 
