@@ -68,7 +68,6 @@ node_t * add_instruction_list_node(node_t * node) {
 }
 
 node_t * add_element_to_list(node_list * list, node_t * element) {
-    printf("entered\n");
     node_list * current_node = list;
     instruction_node * inst = (instruction_node *)element;
     variable_node * var = (variable_node *)inst->instruction;

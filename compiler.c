@@ -5,15 +5,22 @@
 #include <stdlib.h>
 
 int yyparse(node_list ** program);
+void read_tree(node_list * program);
 
 extern FILE * yyin;
 FILE * out;
+
+#define P(...) fprintf(out, ##__VA_ARGS__);
 
 void print_var(node_t * node) {
     variable_node * var = (variable_node *) node;
     expression_node * exp = (expression_node *)(var->value);
 
-    printf("%s %s = %s;\n", var->var_type, var->name, exp->expression);
+    if (var->var_type == NULL) {
+        P("%s = %s;\n", var->name, exp->expression);
+    } else {
+        P("%s %s = %s;\n", var->var_type, var->name, exp->expression);
+    }
 }
 
 int main(int argc, char ** argv) {
@@ -43,6 +50,8 @@ int main(int argc, char ** argv) {
 
     yyparse(&program);
 
+    read_tree(program);
+
     instruction_node * instruction = (instruction_node *)program->node;
     variable_node * variable = (variable_node *)instruction->instruction;
 
@@ -71,3 +80,26 @@ void yyerror(node_list ** program, char *s){
     exit(-1);
 
 }
+
+void read_tree(node_list * program) {
+    node_list * aux = program;
+
+    while (aux != NULL) {
+        instruction_node * nodo = (instruction_node *)aux->node;
+        switch(nodo->instruction->type) {
+            case VARIABLE_NODE:
+                print_var(nodo->instruction);
+                break;
+            default:
+                printf("Algo salio mal\n");
+                break;
+        }
+        aux = aux->next;
+    }
+
+
+}
+
+// aux es una lista de nodos de tipo LIST_NODE
+// LIST_NODE tiene un INSTRUCTION_NODE
+// INSTRUCTION_NODE tiene cualquier otro tipo de nodo

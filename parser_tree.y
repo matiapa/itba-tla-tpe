@@ -21,7 +21,6 @@ void declare_variable(int type, char * name);
 void assign_variable(char * name, char * value, int attr_type);
 void write_symbol(char * name);
 void write_expression(char * exp1, char * op, char * exp2);
-void print_node(node_t * node);
 
 char * type_desc(int type);
 void assert_type(int type, char * var);
@@ -83,7 +82,7 @@ program: instruction program { $$ = (*program = (node_list *)add_element_to_list
     | EOL program { $$ = $2; }
     | FIN { $$ = (*program = (node_list *)add_instruction_list_node(NULL)); };
 
-instruction: full_declare { print_node($1); $$ = add_instruction_node($1); }
+instruction: full_declare { $$ = add_instruction_node($1); }
     | assign { $$ = add_instruction_node($1); };
 
 full_declare: declare '=' value { $$ = add_value_variable($1, $3);}
@@ -191,11 +190,4 @@ void write_symbol(char * name) {
 
 void write_expression(char * exp1, char * op, char * exp2) {
     P("printf(\"%%f\\n\", (double) (%s %s %s));\n", exp1, op, exp2);
-}
-
-void print_node(node_t * node) {
-    variable_node * var = (variable_node *) node;
-    expression_node * exp = (expression_node *)(var->value);
-
-    P("%s %s = %s;\n", var->var_type, var->name, exp->expression);
 }
