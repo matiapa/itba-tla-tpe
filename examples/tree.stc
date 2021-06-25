@@ -7,9 +7,8 @@ number n1 = 2 * 4
 number n2 = n1 >= 4
 write n1
 write n2
-number n3
+number n3 = 3
 n3 = 4
-write n3
+write n3+3
 write "-------"
 write 2 + 40
-

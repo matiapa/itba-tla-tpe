@@ -9,3 +9,6 @@ examples/test.stc
 # Program out
 temp.c
 program
+
+# VS Code
+.vscode
