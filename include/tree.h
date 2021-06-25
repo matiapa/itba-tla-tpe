@@ -7,8 +7,8 @@
 enum { EXPRESSION };
 
 typedef enum {
-  STRING_NODE = 0,
-  CONSTANT_NODE,
+  TEXT_NODE = 0,
+  NUMBER_NODE,
   VARIABLE_NODE,
   OPERATION_NODE,
   CONDITIONAL_NODE,
@@ -22,6 +22,7 @@ typedef enum {
   NEGATION_NODE,
   PRINT_NODE,
   EXPRESSION_NODE,
+  ARRAY_NODE
 } node_type;
 
 typedef struct node_s {
@@ -42,10 +43,14 @@ typedef struct variable_node {
     node_t * value;
 } variable_node;
 
+// los nodos de expression pueden ser 
+// TEXT_NODE, VARIABLE_NODE, NUMBER_NODE
 typedef struct expression_node {
     node_type type;
-    int expression_type; // puede ser de tipo TEXT o de tipo NUMBER
-    char * expression;
+    node_t * first;
+    node_t * second;
+    node_t * third;
+    int cant;
 } expression_node;
 
 typedef struct instruction_node {
@@ -71,17 +76,35 @@ typedef struct print_node {
     node_t * content; // esto puede ser una variable_node o algo de tipo expression_node
 } print_node;
 
+typedef struct text_node {
+    node_type type;
+    char * text;
+} text_node;
+
+typedef struct number_node {
+    node_type type;
+    char * number;
+} number_node;
+
+typedef struct array_node {
+    node_type type;
+    char * array;
+} array_node;
+
 node_t * declare_variable_node(char * name, int var_type);
 node_t * add_value_variable(node_t * var_node, node_t * expression);
 node_t * assign_variable_node(char * name, node_t * expression);
 node_t * add_variable_reference(char * name);
 
-node_t * add_expression(char * expression, int expression_type);
+node_t * add_expression_node(node_t * first, node_t * second, node_t * third, int cant);
 node_t * add_instruction_node(node_t * node);
 node_t * add_instruction_list_node(node_t * node);
 node_t * add_element_to_list(node_list * list, node_t * element);
 
 node_t * add_print_node(node_t * content);
+node_t * add_text_node(char * text);
+node_t * add_list_node(char * array);
+node_t * add_number_node(char * number);
 
 #endif
 

@@ -65,8 +65,7 @@ int recursion = 0;
 %token <string> NUMBER TEXT BOOLEAN ARRAY
 
 %type <number> type
-%type <node> declare full_declare value assign instruction write
-%type <string> expression write_expression
+%type <node> declare full_declare value assign instruction write expression write_expression
 %type <list> program 
 
 %left BIN_OP
@@ -91,20 +90,21 @@ declare: type SYMBOL_NAME { $$ = declare_variable_node($2, $1); };
 type: NUMBER_TYPE | TEXT_TYPE | BOOLEAN_TYPE | ARRAY_TYPE;
 
 assign: SYMBOL_NAME '=' value { $$ = assign_variable_node($1, $3); };
-value: expression { $$ = add_expression($1, EXPRESSION); } 
-    | TEXT { $$ = add_expression($1, TEXT); } ;  
 
-write: WRITE TEXT                           { $$ = add_print_node(add_expression($2, TEXT)); }
+value: expression { $$ = $1; } 
+    | TEXT { $$ = add_text_node($1); } ;  
+
+write: WRITE TEXT                           { $$ = add_print_node(add_text_node($2)); }
     | WRITE SYMBOL_NAME                     { $$ = add_print_node(add_variable_reference($2)); } 
-    | WRITE write_expression                { $$ = add_print_node(add_expression($2, EXPRESSION)); };
+    | WRITE write_expression                { $$ = add_print_node($2); };
 
-write_expression: expression BIN_OP expression { sprintf($$, "%s %s %s", $1, $2, $3); };
+write_expression: expression BIN_OP expression { $$ = add_expression_node($1, add_text_node($2), $3, 3); };
 
-expression: '(' expression ')'              { sprintf($$, "( %s )", $2); }
-    | UNI_OP expression                     { sprintf($$, "%s%s", $1, $2); }
-    | expression BIN_OP expression          { sprintf($$, "%s %s %s", $1, $2, $3); }
-    | NUMBER                                { sprintf($$, "%s", $1); }
-    | SYMBOL_NAME                           { sprintf($$, "%s", $1); };
+expression: '(' expression ')'              { $$ = add_expression_node(add_text_node("("), $2, add_text_node(")"), 3); }
+    | UNI_OP expression                     { $$ = add_expression_node(add_text_node($1), $2, NULL, 2); }
+    | expression BIN_OP expression          { $$ = add_expression_node($1, add_text_node($2), $3, 3); }
+    | NUMBER                                { $$ = add_expression_node(add_number_node($1), NULL, NULL, 1); }
+    | SYMBOL_NAME                           { $$ = add_expression_node(add_variable_reference($1), NULL, NULL, 1); };
 
 %%
 

@@ -11,6 +11,8 @@ FILE * out;
 /*-------------------- FUNCIONES ---------------------*/
 void print_print(node_t * node);
 void print_var(node_t * node);
+void print_expression(node_t * node);
+void print_variable(node_t * node);
 
 void read_tree(node_list * program, FILE * file) {
     
@@ -64,7 +66,13 @@ void print_var(node_t * node) {
     }
     P("%s", var->name);
     if (exp != NULL) {
-        P(" = %s", exp->expression);
+        P(" = ");
+        if (var->value->type == EXPRESSION_NODE) {
+            print_expression(var->value);
+        } else if (var->value->type == TEXT_NODE) {
+            text_node * text = (text_node *)var->value;
+            P("%s", text->text);
+        }
     }
     P(";\n");
 }
@@ -83,12 +91,93 @@ void print_print(node_t * node) {
         }
     }
     if (print->content->type == EXPRESSION_NODE) {
-        expression_node * exp = (expression_node *)print->content;
-        if (exp->expression_type == TEXT) {
-            P("printf(\"%%s\\n\", %s);\n", exp->expression);
+        P("printf(\"%%f\\n\", (double) ");
+        print_expression(print->content);
+        P(");\n");
+        
+
+
+        // expression_node * exp = (expression_node *)print->content;
+        // if (exp->expression_type == TEXT) {
+        //     P("printf(\"%%s\\n\", %s);\n", exp->expression);
+        // }
+        // if (exp->expression_type == EXPRESSION) {
+        //     P("printf(\"%%f\\n\", (double) (%s));\n", exp->expression);
+        // }
+    }
+}
+
+void print_variable(node_t * node) {
+    variable_node * var = (variable_node *)node;
+    if (var->var_type == NUMBER_TYPE) {
+        P("printf(\"%%f\\n\", (double) (%s));\n", var->name);
+    }
+    if(var->var_type == TEXT_TYPE) {
+        P("printf(\"%%s\\n\", %s);\n", var->name);
+    }
+}
+
+void print_expression(node_t * exp) {
+    expression_node * node = (expression_node *)exp;
+
+    if (node->first != NULL && node->cant > 0) {
+        switch (node->first->type) {
+            case EXPRESSION_NODE:
+                print_expression(node->first);
+                break;
+            case VARIABLE_NODE:
+                ;
+                variable_node * var = (variable_node *)node->first;
+                P(" %s ", var->name);
+                break;
+            case TEXT_NODE:
+                P(" %s ", ((text_node *)node->first)->text);
+                break;
+            case NUMBER_NODE:
+                P(" %s ", ((number_node *)node->first)->number);
+                break;
+            default:
+                break;
         }
-        if (exp->expression_type == EXPRESSION) {
-            P("printf(\"%%f\\n\", (double) (%s));\n", exp->expression);
+    }
+    if (node->second != NULL && node->cant > 1) {
+        switch (node->second->type) {
+            case EXPRESSION_NODE:
+                print_expression(node->second);
+                break;
+            case VARIABLE_NODE:
+                ;
+                variable_node * var = (variable_node *)node->first;
+                P(" %s ", var->name);
+                break;
+            case TEXT_NODE:
+                P(" %s ", ((text_node *)node->second)->text);
+                break;
+            case NUMBER_NODE:
+                P(" %s ", ((number_node *)node->second)->number);
+                break;
+            default:
+                break;
+        }
+    }
+    if (node->third != NULL && node->cant > 2) {
+        switch (node->third->type) {
+            case EXPRESSION_NODE:
+                print_expression(node->third);
+                break;
+            case VARIABLE_NODE:
+                ;
+                variable_node * var = (variable_node *)node->first;
+                P(" %s ", var->name);
+                break;
+            case TEXT_NODE:
+                P(" %s ", ((text_node *)node->third)->text);
+                break;
+            case NUMBER_NODE:
+                P(" %s ", ((number_node *)node->third)->number);
+                break;
+            default:
+                break;
         }
     }
 }

@@ -108,6 +108,7 @@ void free_list(var_node * list){
         current->references--;
     }
 }
+
 int check_if_exists(var_node * list,char * name){
     var_node * current=list;
     while (current!=NULL)
