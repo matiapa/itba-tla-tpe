@@ -91,6 +91,37 @@ node_t * add_element_to_list(node_list * list, node_t * element) {
     return (node_t *)new_node;
 }
 
+node_t * add_element_to_block(node_list * list, node_t * element) {
+    node_list * current_node = list;
+    node_list * new_node = (node_list *)add_instruction_list_node(element);
+
+    if (current_node->node == NULL) {
+        free(list);
+        return (node_t *)new_node;
+    } else {
+        new_node->next = current_node;
+    }
+
+    return (node_t *)new_node;
+}
+
+node_t * add_if_node(node_t * condition, node_t * then, node_t * otherwise) {
+    if_node * new = malloc(sizeof(if_node));
+    new->condition = condition;
+    new->then = then;
+    new->otherwise = otherwise;
+    new->type = IF_NODE;
+    return (node_t *)new;
+}
+
+node_t * add_if_block(node_list * list) {
+    block_node * block = malloc(sizeof(block_node));
+    block->node_list = (node_t *)list;
+    block->type = BLOCK_NODE;
+
+    return (node_t *)block;
+}
+
 node_t * add_print_node(node_t * content) {
     print_node * node = malloc(sizeof(print_node));
     node->content = content;
@@ -121,6 +152,15 @@ node_t * add_list_node(char * array) {
     node->array = malloc(strlen(array) + 1);
     strcpy(node->array, array);
     node->type = ARRAY_NODE;
+
+    return (node_t *)node;
+}
+
+node_t * add_operation_node(char * operation) {
+    operation_node * node = (operation_node *)malloc(sizeof(operation_node));
+    node->operation = malloc(strlen(operation) + 1);
+    strcpy(node->operation, operation);
+    node->type = OPERATION_NODE;
 
     return (node_t *)node;
 }

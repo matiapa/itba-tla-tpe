@@ -13,17 +13,6 @@ extern void yyerror(node_list ** program, char *s);
 extern FILE * out;
 extern void * malloc();
 
-// Local prototypes
-
-int lookup_variable(char * name);
-void declare_variable(int type, char * name);
-void assign_variable(char * name, char * value, int attr_type);
-void write_symbol(char * name);
-void write_expression(char * exp1, char * op, char * exp2);
-
-char * type_desc(int type);
-void assert_type(int type, char * var);
-
 // Auxiliar macros
 
 #define P(...) fprintf(out, ##__VA_ARGS__);
@@ -65,8 +54,8 @@ int recursion = 0;
 %token <string> NUMBER TEXT BOOLEAN ARRAY
 
 %type <number> type
-%type <node> declare full_declare value assign instruction write expression write_expression
-%type <list> program 
+%type <node> declare full_declare value assign instruction write expression write_expression if 
+%type <list> program block
 
 %left BIN_OP
 %nonassoc UNI_OP
@@ -80,9 +69,18 @@ program: instruction program { $$ = (*program = (node_list *)add_element_to_list
 
 instruction: full_declare { $$ = add_instruction_node($1); }
     | assign { $$ = add_instruction_node($1); }
-    | write { $$ = add_instruction_node($1); };
+    | write { $$ = add_instruction_node($1); }
+    | if { $$ = add_instruction_node($1); };
 
-full_declare: declare '=' value { $$ = add_value_variable($1, $3);}
+block: instruction block { $$ = (node_list *)add_element_to_list($2, $1); }
+    | EOL block { $$ = $2; }
+    | instruction { $$ = (node_list *)add_instruction_list_node($1); }
+    | EOL { $$ = (node_list *)add_instruction_list_node(NULL); };
+
+if: IF expression DO block END { $$ = add_if_node($2, add_if_block($4), NULL); }
+    | IF expression DO block ELSE block END { $$ = add_if_node($2, add_if_block($4), add_if_block($6)); };
+    
+full_declare: declare '=' value { $$ = add_value_variable($1, $3); }
     | declare { $$ = $1; };
 
 declare: type SYMBOL_NAME { $$ = declare_variable_node($2, $1); };
@@ -98,97 +96,12 @@ write: WRITE TEXT                           { $$ = add_print_node(add_text_node(
     | WRITE SYMBOL_NAME                     { $$ = add_print_node(add_variable_reference($2)); } 
     | WRITE write_expression                { $$ = add_print_node($2); };
 
-write_expression: expression BIN_OP expression { $$ = add_expression_node($1, add_text_node($2), $3, 3); };
+write_expression: expression BIN_OP expression { $$ = add_expression_node($1, add_operation_node($2), $3, 3); };
 
-expression: '(' expression ')'              { $$ = add_expression_node(add_text_node("("), $2, add_text_node(")"), 3); }
-    | UNI_OP expression                     { $$ = add_expression_node(add_text_node($1), $2, NULL, 2); }
-    | expression BIN_OP expression          { $$ = add_expression_node($1, add_text_node($2), $3, 3); }
+expression: '(' expression ')'              { $$ = add_expression_node(add_operation_node("("), $2, add_operation_node(")"), 3); }
+    | UNI_OP expression                     { $$ = add_expression_node(add_operation_node($1), $2, NULL, 2); }
+    | expression BIN_OP expression          { $$ = add_expression_node($1, add_operation_node($2), $3, 3); }
     | NUMBER                                { $$ = add_expression_node(add_number_node($1), NULL, NULL, 1); }
     | SYMBOL_NAME                           { $$ = add_expression_node(add_variable_reference($1), NULL, NULL, 1); };
 
 %%
-
-struct variable {
-    int variable_type;
-    char *variable_name;
-    struct variable *next;
-};
-
-struct variable *variable_list;
-
-
-int lookup_variable(char *name){
-    struct variable *vp = variable_list;
-    for(; vp; vp = vp->next) {
-        if(strcmp(vp->variable_name, name) == 0)
-            return vp->variable_type;
-    }
-    return -1;
-}
-
-void declare_variable(int type, char *name) {
-    struct variable *vp;
-
-    // printf("DEBUG: %s is %d", name, type);
-
-    if(lookup_variable(name) != -1){
-        printf("ERROR: Variable '%s' already defined\n", name);
-        exit(-1);
-    }
-
-    vp = (struct variable *) malloc(sizeof(struct variable));
-    vp->next = variable_list;
-
-    vp->variable_name = (char *) malloc(strlen(name)+1);
-    strcpy(vp->variable_name, name);
-
-    vp->variable_type = type;
-
-    variable_list = vp;
-}
-
-void assign_variable(char * name, char * value, int attr_type) {
-    int type = lookup_variable(name);
-    if (type == -1) {
-        ERROR("'%s' is not defined\n", name);
-    }
-    if (type == NUMBER_TYPE && atof(value) == 0 && attr_type == TEXT) {
-        ERROR("Can't assign text to %s\n", name);
-    }
-}
-
-char * type_desc(int type) {
-    if (type == TEXT_TYPE) return "text";
-    if (type == NUMBER_TYPE) return "number";
-    if (type == BOOLEAN_TYPE) return "boolean";
-    if (type == ARRAY_TYPE) return "array";
-    return NULL;
-}
-
-void assert_type(int expected_type, char * var) {
-    int type = lookup_variable(var);
-    if(type == -1) {
-        ERROR("'%s' is not defined", var);
-    }
-    if(type != expected_type) {
-        ERROR("'%s' must be %s", var, type_desc(expected_type));
-    }
-}
-
-void write_symbol(char * name) {
-    int type = lookup_variable(name);
-    // printf("DEBUG: %s is %d", name, type);
-    if(type == -1) {
-        ERROR("'%s' is not defined", name);
-    }
-    if(type == NUMBER_TYPE) {
-        P("printf(\"%%f\\n\", (double) (%s));\n", name);
-    }
-    if(type == TEXT_TYPE) {
-        P("printf(\"%%s\\n\", %s);\n", name);
-    }
-}
-
-void write_expression(char * exp1, char * op, char * exp2) {
-    P("printf(\"%%f\\n\", (double) (%s %s %s));\n", exp1, op, exp2);
-}

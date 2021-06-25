@@ -23,6 +23,11 @@ write      { return WRITE; }
 "or"		                { strcpy(yylval.string, "||"); return BIN_OP; }
 "not"		                { strcpy(yylval.string, "!"); return BIN_OP; }
 [-~]                        { strcpy(yylval.string, yytext); return UNI_OP; }
+"if"                        { strcpy(yylval.string, yytext); return IF; }
+"else"                      { strcpy(yylval.string, yytext); return ELSE; }
+"while"                     { strcpy(yylval.string, yytext); return WHILE; }
+"do"                        { strcpy(yylval.string, yytext); return DO; }
+"end"                       { return END; }
 
 [a-zA-Z_][a-zA-Z0-9_]*      { strcpy(yylval.string, yytext); return SYMBOL_NAME; }
 

@@ -13,6 +13,8 @@ void print_print(node_t * node);
 void print_var(node_t * node);
 void print_expression(node_t * node);
 void print_variable(node_t * node);
+void read_instruction_list(node_list * list);
+void print_if_node(node_t * node);
 
 void read_tree(node_list * program, FILE * file) {
     
@@ -20,8 +22,13 @@ void read_tree(node_list * program, FILE * file) {
     printf("Empezando con el translate de código\n");
     #endif
     out = file;
-    node_list * aux = program;
 
+    read_instruction_list(program);
+
+}
+
+void read_instruction_list(node_list * list) {
+    node_list * aux = list;
     while (aux != NULL) {
         instruction_node * nodo = (instruction_node *)aux->node;
         switch(nodo->instruction->type) {
@@ -31,6 +38,9 @@ void read_tree(node_list * program, FILE * file) {
             case PRINT_NODE:
                 print_print(nodo->instruction);
                 break;
+            case IF_NODE:
+                print_if_node(nodo->instruction);
+                break;
             default:
                 #ifdef YYDEBUG
                 printf("Algo salio mal\n");
@@ -39,7 +49,6 @@ void read_tree(node_list * program, FILE * file) {
         }
         aux = aux->next;
     }
-
 }
 
 void print_var(node_t * node) {
@@ -94,16 +103,6 @@ void print_print(node_t * node) {
         P("printf(\"%%f\\n\", (double) ");
         print_expression(print->content);
         P(");\n");
-        
-
-
-        // expression_node * exp = (expression_node *)print->content;
-        // if (exp->expression_type == TEXT) {
-        //     P("printf(\"%%s\\n\", %s);\n", exp->expression);
-        // }
-        // if (exp->expression_type == EXPRESSION) {
-        //     P("printf(\"%%f\\n\", (double) (%s));\n", exp->expression);
-        // }
     }
 }
 
@@ -136,6 +135,9 @@ void print_expression(node_t * exp) {
             case NUMBER_NODE:
                 P(" %s ", ((number_node *)node->first)->number);
                 break;
+            case OPERATION_NODE:
+                P(" %s ", ((operation_node *)node->first)->operation);
+                break;
             default:
                 break;
         }
@@ -155,6 +157,9 @@ void print_expression(node_t * exp) {
                 break;
             case NUMBER_NODE:
                 P(" %s ", ((number_node *)node->second)->number);
+                break;
+            case OPERATION_NODE:
+                P(" %s ", ((operation_node *)node->second)->operation);
                 break;
             default:
                 break;
@@ -176,8 +181,26 @@ void print_expression(node_t * exp) {
             case NUMBER_NODE:
                 P(" %s ", ((number_node *)node->third)->number);
                 break;
+            case OPERATION_NODE:
+                P(" %s ", ((operation_node *)node->third)->operation);
+                break;
             default:
                 break;
         }
     }
+}
+
+void print_if_node(node_t * node) {
+    if_node * aux = (if_node *)node;
+    P("if (");
+    print_expression(aux->condition);
+    P(") {\n");
+    block_node * block = (block_node *)aux->then;
+    read_instruction_list((node_list *)block->node_list);
+    if (aux->otherwise != NULL) {
+        P("\n} else {\n");
+        block = (block_node *)aux->otherwise;
+        read_instruction_list((node_list *)block->node_list);
+    }
+    P("}\n");
 }
