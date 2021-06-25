@@ -44,7 +44,11 @@ int main(int argc, char ** argv) {
     yyparse(&program);
 
     instruction_node * instruction = (instruction_node *)program->node;
-    // variable_node * variable = (variable_node *)instruction->instruction;
+    variable_node * variable = (variable_node *)instruction->instruction;
+
+    node_list * list_node = (node_list *)(program->next);
+    instruction = (instruction_node *)list_node->node;
+    variable = (variable_node *)instruction->instruction;
 
     //print_var(instruction->instruction);
 

@@ -53,6 +53,7 @@ node_t * assign_variable_node(char * name, node_t * expression) {
 
 node_t * add_instruction_node(node_t * node) {
     instruction_node * new = malloc(sizeof(instruction_node));
+    variable_node * var = (variable_node *)node;
     new->instruction = node;
     new->type = INSTRUCTION_NODE;
     return (node_t *)new;
@@ -69,9 +70,21 @@ node_t * add_instruction_list_node(node_t * node) {
 node_t * add_element_to_list(node_list * list, node_t * element) {
     printf("entered\n");
     node_list * current_node = list;
-    while (current_node->next != NULL)
-        current_node = (node_list *)current_node->next;
-    current_node->next = (node_list *)add_instruction_list_node(element);
+    instruction_node * inst = (instruction_node *)element;
+    variable_node * var = (variable_node *)inst->instruction;
 
-    return (node_t *)list;
+    node_list * new_node = (node_list *)add_instruction_list_node(element);
+
+    if (current_node->node == NULL) {
+        free(list);
+        return (node_t *)new_node;
+    } else {
+
+        new_node->next = current_node;
+        // while (current_node->next != NULL)
+        //     current_node = (node_list *)current_node->next;
+        // current_node->next = new_node;
+    }
+
+    return (node_t *)new_node;
 }
