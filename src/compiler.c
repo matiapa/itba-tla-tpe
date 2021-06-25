@@ -1,5 +1,6 @@
 #include "../include/tree.h"
 #include "../include/tree_translation.h"
+#include "../include/var_finder.h"
 #include "../y.tab.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -35,6 +36,8 @@ int main(int argc, char ** argv) {
     fprintf(out, "int main() {\n");
 
     yyparse(&program);
+
+    check_and_set_variables(program);
 
     read_tree(program, out);
 
