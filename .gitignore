@@ -10,5 +10,6 @@ examples/test.stc
 temp.c
 program
 
-# VS Code
-.vscode
+# Others
+.vscode/
+tests/

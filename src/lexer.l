@@ -6,13 +6,15 @@ int fileno(FILE * stream);
 %}
 %%
 
-^number     { yylval.number = NUMBER_TYPE; return NUMBER_TYPE; }
-^text       { yylval.number = TEXT_TYPE; return TEXT_TYPE; }
-^boolean    { yylval.number = BOOLEAN_TYPE; return BOOLEAN_TYPE; }
-write       { return WRITE; }
+number     { yylval.number = NUMBER_TYPE; return NUMBER_TYPE; }
+text       { yylval.number = TEXT_TYPE; return TEXT_TYPE; }
+boolean    { yylval.number = BOOLEAN_TYPE; return BOOLEAN_TYPE; }
+list       { yylval.number = ARRAY_TYPE; return ARRAY_TYPE; }
+write      { return WRITE; }
 
 \"[^\"]+\"                  { strcpy(yylval.string, yytext); return TEXT; }
 [-]?[0-9]+(\.[0-9]+)?       { strcpy(yylval.string, yytext); return NUMBER; }
+\{([0-9],)+\}                 { strcpy(yylval.string, yytext); return ARRAY; }
 
 [-+\*/%<>]|<=|>=            { strcpy(yylval.string, yytext); return BIN_OP; }
 "neq"		                { strcpy(yylval.string, "!="); return BIN_OP; }

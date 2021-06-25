@@ -55,6 +55,7 @@ int main(int argc, char ** argv) {
 void yyerror(node_list ** program, char *s){
 
     printf("%s", s);
+    // printf("%d: %s at '%s'\n", yylineno, msg, yytext);
 
     exit(-1);
 

@@ -1,8 +1,3 @@
-text saludo = "Hola mundo"
-write saludo
-
-# Este es un comentario
-
 number n1 = 2 * 4
 number n2 = n1 >= 4
 write n1
