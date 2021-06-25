@@ -2,13 +2,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "include/tree.h"
 
 enum { EXPRESSION };
 
 // Extern prototypes
 
 extern int yylex();
-extern void yyerror(char *s);
+extern void yyerror(node_list ** program, char *s);
 
 extern FILE * out;
 extern void * malloc();
@@ -36,8 +37,6 @@ void assert_type(int type, char * var);
 // Global variables
 
 int yydebug=1;
-
-int attr_type = -1;
 int recursion = 0;
 
 %}
@@ -47,6 +46,8 @@ int recursion = 0;
     double array[1024];
     double number;
     char boolean;
+    node_t * node;
+    node_list * list;
 }
 
 %token START
@@ -64,44 +65,43 @@ int recursion = 0;
 %token <string> BIN_OP UNI_OP
 %token <string> NUMBER TEXT BOOLEAN ARRAY
 
-%type <number> type
-%type <string> declare value expression
+%type <string> type
+%type <node> declare full_declare value assign instruction
+%type <string> expression 
+%type <list> program 
 
 %left BIN_OP
 %nonassoc UNI_OP
 
+%parse-param {node_list ** program}
+
 %%
-program: instruction program | EOL program | FIN;
-block: instruction block | EOL block | END ;
-instruction: full_declare | assign | write
-    | recursion block EOL { P("\n}\n");};
+program: instruction program { $$ = (*program = (node_list *)add_element_to_list($2, $1)); }
+    | EOL program { $$ = $2; }
+    | FIN { $$ = (*program = (node_list *)add_instruction_list_node(NULL)); };
 
-recursion: IF expression DO { P("%s (%s) {\n", $1, $2);}
-    | WHILE expression DO { P("%s (%s) {\n", $1, $2);};
+instruction: full_declare { $$ = add_instruction_node($1); }
+    | assign { $$ = add_instruction_node($1); };
 
-full_declare: declare '=' value { assign_variable($1, $3, attr_type); P(" %s = %s;\n", $1, $3); }
-    | declare { P(" %s;\n", $1); };
+full_declare: declare '=' value { $$ = add_value_variable($1, $3);}
+    | declare { $$ = $1; };
 
-declare: type SYMBOL_NAME { strcpy($$, $2); declare_variable($1, $2); };
+declare: type SYMBOL_NAME { $$ = declare_variable_node($2, $1); };
 
-type: NUMBER_TYPE   { P("double")  }
-    | TEXT_TYPE     { P("char *")  }
-    | BOOLEAN_TYPE  { P("char")    }
-    | ARRAY_TYPE    { P("double *")};
+type: NUMBER_TYPE   { sprintf($$, "%s", "double");  }
+    | TEXT_TYPE     { sprintf($$, "%s", "char *");  }
+    | BOOLEAN_TYPE  { sprintf($$, "%s", "char");    }
+    | ARRAY_TYPE    { sprintf($$, "%s", "double *"); };
 
-assign: SYMBOL_NAME '=' value { assign_variable($1, $3, attr_type); P("%s = %s;\n", $1, $3); };
-value: expression {attr_type = EXPRESSION;} 
-    | TEXT {attr_type = TEXT;} ;
-
-write: WRITE TEXT                           { P("printf(\"%%s\\n\", %s);\n", $2); }
-    | WRITE SYMBOL_NAME                     { write_symbol($2);} 
-    | WRITE expression BIN_OP expression    { write_expression($2, $3, $4); };  
+assign: SYMBOL_NAME '=' value { $$ = assign_variable_node($1, $3); };
+value: expression { $$ = add_expression($1, EXPRESSION); } 
+    | TEXT { $$ = add_expression($1, TEXT); } ;  
 
 expression: '(' expression ')'              { sprintf($$, "( %s )", $2); }
     | UNI_OP expression                     { sprintf($$, "%s%s", $1, $2); }
     | expression BIN_OP expression          { sprintf($$, "%s %s %s", $1, $2, $3); }
     | NUMBER                                { sprintf($$, "%s", $1); }
-    | SYMBOL_NAME                           { assert_type(NUMBER_TYPE, $1); sprintf($$, "%s", $1); };
+    | SYMBOL_NAME                           { sprintf($$, "%s", $1); };
 
 %%
 

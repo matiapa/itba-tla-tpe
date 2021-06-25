@@ -19,7 +19,7 @@ typedef enum {
   INSTRUCTION_NODE,
   NEGATION_NODE,
   PRINT_NODE,
-  EXPRESSION_NODE
+  EXPRESSION_NODE,
 } node_type;
 
 typedef struct node_s {
@@ -42,6 +42,7 @@ typedef struct variable_node {
 
 typedef struct expression_node {
     node_type type;
+    int expression_type;
     char * expression;
 } expression_node;
 
@@ -53,21 +54,26 @@ typedef struct instruction_node {
 
 typedef struct block {
     node_type type;
-
+    node_t * node_list;
 } block;
 
 typedef struct if_node {
     node_type type;
-    node_t * condition;
-    node_t * then;
-    node_t * otherwise;
+    node_t * condition; // esto es un expression_node
+    node_t * then; // esto es un block_node
+    node_t * otherwise; // esto es un block_node
 } if_node;
+
+typedef struct print_node {
+    node_type type;
+    node_t * content; // esto puede ser una variable_node o algo de tipo expression_node
+} print_node;
 
 node_t * declare_variable_node(char * name, char * var_type);
 node_t * add_value_variable(node_t * var_node, node_t * expression);
 node_t * assign_variable_node(char * name, node_t * expression);
 
-node_t * add_expression(char * expression);
+node_t * add_expression(char * expression, int expression_type);
 node_t * add_instruction_node(node_t * node);
 node_t * add_instruction_list_node(node_t * node);
 node_t * add_element_to_list(node_list * list, node_t * element);

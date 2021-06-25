@@ -1,11 +1,12 @@
-#include "tree.h"
+#include "../include/tree.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-node_t * add_expression(char * expression) {
+node_t * add_expression(char * expression, int expression_type) {
     expression_node * expression_node = malloc(sizeof(expression_node));
     expression_node->type = EXPRESSION_NODE;
+    expression_node->expression_type = expression_type;
     expression_node->expression = malloc(strlen(expression)+1);
     strcpy(expression_node->expression, expression);
 
@@ -53,7 +54,6 @@ node_t * assign_variable_node(char * name, node_t * expression) {
 
 node_t * add_instruction_node(node_t * node) {
     instruction_node * new = malloc(sizeof(instruction_node));
-    variable_node * var = (variable_node *)node;
     new->instruction = node;
     new->type = INSTRUCTION_NODE;
     return (node_t *)new;
@@ -69,8 +69,6 @@ node_t * add_instruction_list_node(node_t * node) {
 
 node_t * add_element_to_list(node_list * list, node_t * element) {
     node_list * current_node = list;
-    instruction_node * inst = (instruction_node *)element;
-    variable_node * var = (variable_node *)inst->instruction;
 
     node_list * new_node = (node_list *)add_instruction_list_node(element);
 
@@ -78,12 +76,15 @@ node_t * add_element_to_list(node_list * list, node_t * element) {
         free(list);
         return (node_t *)new_node;
     } else {
-
         new_node->next = current_node;
-        // while (current_node->next != NULL)
-        //     current_node = (node_list *)current_node->next;
-        // current_node->next = new_node;
     }
 
     return (node_t *)new_node;
+}
+
+node_t * add_print_node(node_t * content) {
+    print_node * node = malloc(sizeof(print_node));
+    node->content = content;
+    node->type = PRINT_NODE;
+    return (node_t *)node;
 }
