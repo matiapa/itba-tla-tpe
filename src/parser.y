@@ -4,7 +4,6 @@
 #include <string.h>
 #include "include/tree.h"
 
-enum { EXPRESSION };
 
 // Extern prototypes
 
@@ -58,16 +57,16 @@ int recursion = 0;
 %token ASSIGN
 %token <string> IF WHILE DO END ELSE
 %token EOL FIN
-%token TEXT_TYPE NUMBER_TYPE BOOLEAN_TYPE ARRAY_TYPE
+%token <number> TEXT_TYPE NUMBER_TYPE BOOLEAN_TYPE ARRAY_TYPE
 %token WRITE
 
 %token <string> SYMBOL_NAME
 %token <string> BIN_OP UNI_OP
 %token <string> NUMBER TEXT BOOLEAN ARRAY
 
-%type <string> type
-%type <node> declare full_declare value assign instruction
-%type <string> expression 
+%type <number> type
+%type <node> declare full_declare value assign instruction write
+%type <string> expression write_expression
 %type <list> program 
 
 %left BIN_OP
@@ -81,21 +80,25 @@ program: instruction program { $$ = (*program = (node_list *)add_element_to_list
     | FIN { $$ = (*program = (node_list *)add_instruction_list_node(NULL)); };
 
 instruction: full_declare { $$ = add_instruction_node($1); }
-    | assign { $$ = add_instruction_node($1); };
+    | assign { $$ = add_instruction_node($1); }
+    | write { $$ = add_instruction_node($1); };
 
 full_declare: declare '=' value { $$ = add_value_variable($1, $3);}
     | declare { $$ = $1; };
 
 declare: type SYMBOL_NAME { $$ = declare_variable_node($2, $1); };
 
-type: NUMBER_TYPE   { sprintf($$, "%s", "double");  }
-    | TEXT_TYPE     { sprintf($$, "%s", "char *");  }
-    | BOOLEAN_TYPE  { sprintf($$, "%s", "char");    }
-    | ARRAY_TYPE    { sprintf($$, "%s", "double *"); };
+type: NUMBER_TYPE | TEXT_TYPE | BOOLEAN_TYPE | ARRAY_TYPE;
 
 assign: SYMBOL_NAME '=' value { $$ = assign_variable_node($1, $3); };
 value: expression { $$ = add_expression($1, EXPRESSION); } 
     | TEXT { $$ = add_expression($1, TEXT); } ;  
+
+write: WRITE TEXT                           { $$ = add_print_node(add_expression($2, TEXT)); }
+    | WRITE SYMBOL_NAME                     { $$ = add_print_node(add_variable_reference($2)); } 
+    | WRITE write_expression                { $$ = add_print_node(add_expression($2, EXPRESSION)); };
+
+write_expression: expression BIN_OP expression { sprintf($$, "%s %s %s", $1, $2, $3); };
 
 expression: '(' expression ')'              { sprintf($$, "( %s )", $2); }
     | UNI_OP expression                     { sprintf($$, "%s%s", $1, $2); }
