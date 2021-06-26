@@ -70,7 +70,7 @@ var_node * check_and_set_variables_rec(node_t * node,var_node * var_list){
                         printf("Var %s already declared \n",variable_node_var->name);
                         error=-1;
                     }
-                    var_list=add_to_list(var_list,create_var_node(variable_node_var->type,variable_node_var->name));
+                    var_list=add_to_list(var_list,create_var_node(variable_node_var->var_type,variable_node_var->name));
                 }
                 if (variable_node_var->declared==FALSE && variable_node_var->value!=NULL){ //caso donde no se define la var pero se asigna
                     int type =check_if_exists(var_list,variable_node_var->name);
@@ -103,7 +103,10 @@ var_node * check_and_set_variables_rec(node_t * node,var_node * var_list){
                         break;          
             
                     case EXPRESSION_NODE:
-                     //TODO implement esto
+                        if(!check_var_type_in_expression(NUMBER_TYPE,(expression_node *)print_node_var->content,var_list)){
+                            printf("Var in write is type text in expression\n");
+                            error=-1;
+                        }
                         break;
                 
                     case TEXT_NODE:
@@ -118,9 +121,12 @@ var_node * check_and_set_variables_rec(node_t * node,var_node * var_list){
                 }
                 break;
             case IF_NODE:
-                //TODO implement condition
                 ;
                 if_node* if_node_var=(if_node *)node;
+                if(!check_var_type_in_expression(NUMBER_TYPE,(expression_node *)if_node_var->condition,var_list)){
+                    printf("Var in write is type text in expression\n");
+                    error=-1;
+                }
                 var_list->references++;
                 check_and_set_variables_internal( (node_list *)((block_node *)if_node_var->then)->node_list,var_list);
                 free_list(var_list);
