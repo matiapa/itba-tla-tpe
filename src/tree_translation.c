@@ -51,9 +51,6 @@ void read_instruction_list(node_list * list) {
             case WHILE_NODE:
                 print_while_node(nodo->instruction);
                 break;
-            case FUNCTION_CALL_NODE:
-                print_function_call(nodo->instruction);
-                break;
             default:
                 #ifdef YYDEBUG
                 printf("Algo salio mal\n");
@@ -72,6 +69,7 @@ void print_var(node_t * node) {
     variable_node * var = (variable_node *) node;
 
     if (var->declared == TRUE) {
+        // Es una declaracion
         switch(var->var_type) {
             case NUMBER_TYPE:
                 P("double %s", var->name);
@@ -92,6 +90,9 @@ void print_var(node_t * node) {
             default:
                 break;
         }
+    } else {
+        // Es una asignacion/referenciacion
+        P("%s", (var->name));
     }
     free(var->name);
 
@@ -120,13 +121,13 @@ void print_print(node_t * node) {
             ;
             variable_node * var = (variable_node *)(print->content);
             if (var->var_type == NUMBER_TYPE)
-                P("printf(\"%%f\\n\", (double) (%s));\n", var->name);
+                P("printf(\"%%lf\\n\", (double) (%s));\n", var->name);
             if(var->var_type == TEXT_TYPE)
                 P("printf(\"%%s\\n\", %s);\n", var->name);
             free(var->name);
             break;
         case EXPRESSION_NODE:
-            P("printf(\"%%f\\n\", (double) (");
+            P("printf(\"%%lf\\n\", (double) (");
             print_expression(print->content);
             P("));\n");
             break;
@@ -165,6 +166,8 @@ void switch_print_expression(node_t * node) {
             P(" %s ", ((operation_node *)node)->operation);
             free(((operation_node *)node)->operation);
             break;
+        case FUNCTION_CALL_NODE:
+            print_function_call(node);
         default:
             break;
     }
@@ -222,7 +225,7 @@ void print_function_call(node_t * node) {
 
     if (fcall->input_list->type == ARRAY_NODE) {
         char * str = ((array_node *) fcall->input_list)->array;
-        P("str_caller(%s,%s)", str, fcall->function_name);
+        P("str_caller(\"%s\", %s)", str, fcall->function_name);
     } else {
         variable_node * symbol = (variable_node *) fcall->input_list;
         if (symbol->type != LIST_TYPE)

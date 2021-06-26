@@ -1,7 +1,8 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
-int str_caller(char * str, int (*fun)(double *, int)) {
+double str_caller(char * str, double (*fun)(double *, int)) {
     double * list = malloc(sizeof(double));
     int s=1, p=1;
     for(int c=1; str[c] != '}'; c++){
@@ -12,33 +13,33 @@ int str_caller(char * str, int (*fun)(double *, int)) {
     }
     list = realloc(list, sizeof(double) * (s+1));
     sscanf(str + p, "%lf", list + s - 1);
-    int res = fun(list, s); free(list);
+    double res = fun(list, s); free(list);
     return res;
 }
 
-int mean(double * list, int size) {
+double mean(double * list, int size) {
     double sum = 0;
     for(int i=0; i<size; i++)
         sum += list[i];
     return sum / size;
 }
 
-int median(double * list) { }
+double median(double * list) { }
 
-int mode(double * list) { }
+double mode(double * list) { }
 
-int stdev(double * list) { }
+double stdev(double * list) { }
 
-int range(double * list) { }
+double range(double * list) { }
 
-int qtr1(double * list) { }
+double qtr1(double * list) { }
 
-int qtr3(double * list) { }
+double qtr3(double * list) { }
 
-int inter_qtr(double * list) { }
+double inter_qtr(double * list) { }
 
-int perc_n(double * list) { }
+double perc_n(double * list) { }
 
-int gcd(double * list) { }
+double gcd(double * list) { }
 
-int mcm(double * list) { }
+double mcm(double * list) { }

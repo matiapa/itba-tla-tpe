@@ -1,5 +1,5 @@
 PHONY = all clean
-CCFLAGS = -Wall -Wno-unused-function -pedantic -std=c99 -g #-fsanitize=address #-DYYDEBUG=1
+CCFLAGS = -Wall -Wno-unused-function -pedantic -std=c99 -g -DYYDEBUG=1 #-fsanitize=address 
 YLFLAGS = -ll
 MKDIR_BIN = bin
 SRC_FOLDER = src

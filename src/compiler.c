@@ -35,14 +35,14 @@ int main(int argc, char ** argv) {
         exit(-1);
     }
     
-    fprintf(out, "#include <stdio.h>\n");
+    fprintf(out, "#include \"include/temp.h\"\n");
     fprintf(out, "int main() {\n");
 
     yyparse(&program);
-    if (check_and_set_variables(program)==-1) {
-        printf("failure occured while checking variable validity\n");
-        exit(-1);
-    }
+    // if (check_and_set_variables(program)==-1) {
+    //     printf("failure occured while checking variable validity\n");
+    //     exit(-1);
+    // }
     
     read_tree(program, out);
 
@@ -50,7 +50,7 @@ int main(int argc, char ** argv) {
     fprintf(out, "\n}");
     fclose(out);
 
-    system("gcc temp.c -o program");
+    system("gcc src/functions.c temp.c -o program");
 
     printf("\nSuccesfully parsed\n");
 

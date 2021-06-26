@@ -72,7 +72,6 @@ program: instruction program { $$ = (*program = (node_list *)add_element_to_list
 instruction: full_declare { $$ = add_instruction_node($1); }
     | assign { $$ = add_instruction_node($1); }
     | write { $$ = add_instruction_node($1); }
-    | function_call  { $$ = add_instruction_node($1); }
     | if { $$ = add_instruction_node($1); }
     | while { $$ = add_instruction_node($1); };
 

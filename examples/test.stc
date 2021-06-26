@@ -1,1 +1,2 @@
-number n1 = mean of {1,2,3}
+# number n1 = mean of {1,2,3}
+write mean of {6,7,8,9}
