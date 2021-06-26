@@ -78,7 +78,7 @@ void * free_instruction_node(node_t * node) {
             #endif                
             break;
     }
-    free(nodo->instruction);
+    free(node);
     return NULL;
 }
 
@@ -86,7 +86,6 @@ void * free_instruction_list(node_list * list) {
     node_list * aux = list;
     while (aux != NULL) {
         free_instruction_node(aux->node);
-        free(aux->node);
         node_list * next = aux->next;
         free(aux);
         aux = next;
@@ -107,27 +106,31 @@ void * free_variable(node_t * node) {
             free_array_node(var->value);
         }
     }
-    free(var->value);
+    free(node);
     return NULL;
 }
 
 void * free_text_node(node_t * node) {
     free(((text_node *) node)->text);
+    free(node);
     return NULL;
 }
 
 void * free_number_node(node_t * node) {
     free(((number_node *) node)->number);
+    free(node);
     return NULL;
 }
 
 void * free_operation_node(node_t * node) {
     free(((operation_node *) node)->operation);
+    free(node);
     return NULL;
 }
 
 void * free_array_node(node_t * node) {
     free(((array_node *) node)->array);
+    free(node);
     return NULL;
 }
 
@@ -149,7 +152,7 @@ void * free_write(node_t * node) {
         default:
             break;
     }
-    free(print->content);
+    free(node);
     return NULL;
 }
 
@@ -162,7 +165,7 @@ void * free_read(node_t * node) {
         default:
             break;
     }
-    free(read->content);
+    free(node);
     return NULL;
 }
 
@@ -197,15 +200,12 @@ void * free_expression(node_t * exp) {
 
     if (node->first != NULL) {
         switch_free_expression(node->first);
-        free(node->first);
     }
     if (node->second != NULL) {
         switch_free_expression(node->second);
-        free(node->second);
     }
     if (node->third != NULL) {
         switch_free_expression(node->third);
-        free(node->third);
     }
     return NULL;
 }
@@ -213,7 +213,6 @@ void * free_expression(node_t * exp) {
 void * free_if_node(node_t * node) {
     if_node * aux = (if_node *)node;
     free_expression(aux->condition);
-    free(aux->condition);
     block_node * block = (block_node *)aux->then;
     free_instruction_list((node_list *)block->node_list);
     free(block);
@@ -222,13 +221,13 @@ void * free_if_node(node_t * node) {
         free_instruction_list((node_list *)block->node_list);
         free(block);
     }
+    free(node);
     return NULL;
 }
 
 void * free_while_node(node_t * node) {
     while_node * aux = (while_node *)node;
     free_expression(aux->condition);
-    free(aux->condition);
     block_node * block = (block_node *)aux->then;
     free_instruction_list((node_list *)block->node_list);
     free(block);
@@ -245,5 +244,6 @@ void * free_list_op(node_t * node) {
     }
     free(lop->input_list);
     free(lop->operator);
+    free(node);
     return NULL;
 }

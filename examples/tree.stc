@@ -1,11 +1,10 @@
-# WORKING
-start
 
 number n1 = 2.5 * 4
 number n2 = $n1 >= 4
 write n1
 write n2
 
+start
 write "-------"
 number n3
 n3 = 4
