@@ -1,17 +1,20 @@
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "../include/tree.h"
 #include "../include/tree_translation.h"
 #include "../include/var_finder.h"
+#include "../include/free_tree.h"
 #include "../y.tab.h"
 #include <stdio.h>
 #include <stdlib.h>
 
 int yyparse(node_list ** program);
+extern int yylineno;
 
 extern FILE * yyin;
 FILE * out;
+node_list * program;
 
 int main(int argc, char ** argv) {
-    node_list * program;
 
     if (argc == 1) {
         printf("Reading program from stdin\n");
@@ -41,8 +44,6 @@ int main(int argc, char ** argv) {
         exit(-1);
     }
     
-    
-
     read_tree(program, out);
 
     fprintf(out, "return 0;\n");
@@ -55,12 +56,13 @@ int main(int argc, char ** argv) {
 
 }
 
+void yyerror(node_list ** param, char *s){
+    extern char* yytext;
 
-void yyerror(node_list ** program, char *s){
+    fprintf(stderr, "%s: line: %d - '%s' \n\n", s, yylineno, yytext);
 
-    printf("%s", s);
-    // printf("%d: %s at '%s'\n", yylineno, msg, yytext);
+    free_tree(program);
 
-    exit(-1);
+    exit(1);
 
 }

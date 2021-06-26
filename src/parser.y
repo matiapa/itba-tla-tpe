@@ -8,7 +8,7 @@
 // Extern prototypes
 
 extern int yylex();
-extern void yyerror(node_list ** program, char *s);
+void yyerror(node_list ** program, char *s);
 
 extern FILE * out;
 extern void * malloc();

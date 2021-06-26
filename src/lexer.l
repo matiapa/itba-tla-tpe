@@ -5,6 +5,9 @@
 #include <stdio.h>
 int fileno(FILE * stream);
 %}
+
+%option yylineno
+
 %%
 
 number     { yylval.number = NUMBER_TYPE; return NUMBER_TYPE; }
