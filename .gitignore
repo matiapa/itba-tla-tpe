@@ -12,3 +12,5 @@ program
 
 # Others
 .vscode/
+.idea/
+pvs.sh

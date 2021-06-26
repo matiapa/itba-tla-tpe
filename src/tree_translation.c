@@ -5,8 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define P(...) fprintf(out, ##__VA_ARGS__);
-FILE * out;
+#define P(...) fprintf(output, ##__VA_ARGS__);
+FILE * output;
 
 /*-------------------- FUNCIONES ---------------------*/
 void print_print(node_t * node);
@@ -15,13 +15,16 @@ void print_expression(node_t * node);
 void read_instruction_list(node_list * list);
 void print_if_node(node_t * node);
 void print_while_node(node_t * node);
+void free_text_node(node_t * node);
+void free_number_node(node_t * node);
+void free_operation_node(node_t * node);
 
 void read_tree(node_list * program, FILE * file) {
     
     #ifdef YYDEBUG
     printf("Empezando con el translate de código\n");
     #endif
-    out = file;
+    output = file;
 
     read_instruction_list(program);
 
@@ -51,6 +54,7 @@ void read_instruction_list(node_list * list) {
                 break;
         }
         free(nodo->instruction);
+        free(nodo);
         node_list * next = aux->next;
         free(aux);
         aux = next;
@@ -89,10 +93,10 @@ void print_var(node_t * node) {
         } else if (var->value->type == TEXT_NODE) {
             text_node * text = (text_node *)var->value;
             P("%s", text->text);
-            free(text);
+            free(text->text);
         }
     }
-    free(exp);
+    free(var->value);
     P(";\n");
 }
 
@@ -108,7 +112,6 @@ void print_print(node_t * node) {
                 P("printf(\"%%f\\n\", (double) (%s));\n", var->name);
             if(var->var_type == TEXT_TYPE)
                 P("printf(\"%%s\\n\", %s);\n", var->name);
-            
             free(var->name);
             break;
         case EXPRESSION_NODE:
@@ -120,6 +123,7 @@ void print_print(node_t * node) {
             ;
             text_node * text = (text_node *)print->content;
             P("printf(\"%%s\\n\", %s);\n", text->text);
+            free(text->text);
             break;
         default:
             break;

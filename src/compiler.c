@@ -1,6 +1,7 @@
 #include "../include/tree.h"
 #include "../include/tree_translation.h"
 #include "../include/var_finder.h"
+#include "../include/free_tree.h"
 #include "../y.tab.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -60,6 +61,8 @@ void yyerror(node_list ** program, char *s){
 
     printf("%s", s);
     // printf("%d: %s at '%s'\n", yylineno, msg, yytext);
+
+    free_tree(*program);
 
     exit(-1);
 
