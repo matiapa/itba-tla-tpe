@@ -16,6 +16,7 @@ text       { yylval.number = TEXT_TYPE; return TEXT_TYPE; }
 boolean    { yylval.number = BOOLEAN_TYPE; return BOOLEAN_TYPE; }
 list       { yylval.number = LIST_TYPE; return LIST_TYPE; }
 write      { return WRITE; }
+read       { return READ; }
 
 (mean|median|mode|stdev|range|qtr1|qtr3|inter_qtr)[ ]of {
     int i; for(i=0; yytext[i]!=' '; i++);

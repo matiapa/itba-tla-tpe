@@ -130,6 +130,27 @@ void check_and_set_variables_rec(node_t * node,var_node ** var_list){
                         break;
                 }
                 break;
+
+            case READ_NODE:
+                ;
+                read_node * read_node_var = (read_node *) node;
+                switch (read_node_var->content->type){
+                    case VARIABLE_NODE:
+                        check_and_set_variables_rec((node_t *) read_node_var->content,var_list);  
+                        if (((variable_node *)read_node_var->content)->var_type!=NUMBER_TYPE)
+                        {
+                            printf("Var %s not of type numeric \n",((variable_node *)read_node_var->content)->name);
+                            error=-1;
+                        }
+                        break;         
+                    
+                    default:
+                        #ifdef YYDEBUG
+                        printf("Algo salio mal var checker read_node\n");
+                        #endif
+                        break;
+                }
+                break;
             case IF_NODE:
                 ;
                 if_node* if_node_var=(if_node *)node;
