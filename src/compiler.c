@@ -64,7 +64,3 @@ void yyerror(node_list ** program, char *s){
     exit(-1);
 
 }
-
-// aux es una lista de nodos de tipo LIST_NODE
-// LIST_NODE tiene un INSTRUCTION_NODE
-// INSTRUCTION_NODE tiene cualquier otro tipo de nodo

@@ -50,8 +50,10 @@ typedef struct expression_node {
     node_t * first;
     node_t * second;
     node_t * third;
-    int cant;
 } expression_node;
+// los nodos de expression pueden ser 
+// TEXT_NODE, VARIABLE_NODE, NUMBER_NODE
+// o EXPRESSION_NODE
 
 typedef struct instruction_node {
     node_type type;
@@ -59,10 +61,10 @@ typedef struct instruction_node {
 } instruction_node;
 
 
-typedef struct block {
+typedef struct block_node {
     node_type type;
     node_t * node_list;
-} block;
+} block_node;
 
 typedef struct if_node {
     node_type type;
@@ -70,6 +72,12 @@ typedef struct if_node {
     node_t * then; // esto es un block_node
     node_t * otherwise; // esto es un block_node
 } if_node;
+
+typedef struct while_node {
+    node_type type;
+    node_t * condition; // esto es un expression_node
+    node_t * then; // esto es un block_node
+} while_node;
 
 typedef struct print_node {
     node_type type;
@@ -91,12 +99,17 @@ typedef struct array_node {
     char * array;
 } array_node;
 
+typedef struct operation_node {
+    node_type type;
+    char * operation;
+} operation_node;
+
 node_t * declare_variable_node(char * name, int var_type);
 node_t * add_value_variable(node_t * var_node, node_t * expression);
 node_t * assign_variable_node(char * name, node_t * expression);
 node_t * add_variable_reference(char * name);
 
-node_t * add_expression_node(node_t * first, node_t * second, node_t * third, int cant);
+node_t * add_expression_node(node_t * first, node_t * second, node_t * third);
 node_t * add_instruction_node(node_t * node);
 node_t * add_instruction_list_node(node_t * node);
 node_t * add_element_to_list(node_list * list, node_t * element);
@@ -105,6 +118,11 @@ node_t * add_print_node(node_t * content);
 node_t * add_text_node(char * text);
 node_t * add_list_node(char * array);
 node_t * add_number_node(char * number);
+node_t * add_block_node(node_list * list);
+node_t * add_if_node(node_t * condition, node_t * then, node_t * otherwise);
+node_t * add_while_node(node_t * condition, node_t * block);
+
+node_t * add_operation_node(char * operation);
 
 #endif
 

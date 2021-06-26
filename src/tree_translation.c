@@ -12,7 +12,9 @@ FILE * out;
 void print_print(node_t * node);
 void print_var(node_t * node);
 void print_expression(node_t * node);
-void print_variable(node_t * node);
+void read_instruction_list(node_list * list);
+void print_if_node(node_t * node);
+void print_while_node(node_t * node);
 
 void read_tree(node_list * program, FILE * file) {
     
@@ -20,8 +22,13 @@ void read_tree(node_list * program, FILE * file) {
     printf("Empezando con el translate de código\n");
     #endif
     out = file;
-    node_list * aux = program;
 
+    read_instruction_list(program);
+
+}
+
+void read_instruction_list(node_list * list) {
+    node_list * aux = list;
     while (aux != NULL) {
         instruction_node * nodo = (instruction_node *)aux->node;
         switch(nodo->instruction->type) {
@@ -31,15 +38,23 @@ void read_tree(node_list * program, FILE * file) {
             case PRINT_NODE:
                 print_print(nodo->instruction);
                 break;
+            case IF_NODE:
+                print_if_node(nodo->instruction);
+                break;
+            case WHILE_NODE:
+                print_while_node(nodo->instruction);
+                break;
             default:
                 #ifdef YYDEBUG
                 printf("Algo salio mal\n");
                 #endif                
                 break;
         }
-        aux = aux->next;
+        free(nodo->instruction);
+        node_list * next = aux->next;
+        free(aux);
+        aux = next;
     }
-
 }
 
 void print_var(node_t * node) {
@@ -64,7 +79,9 @@ void print_var(node_t * node) {
                 break;
         }
     }
+    
     P("%s", var->name);
+    free(var->name);
     if (exp != NULL) {
         P(" = ");
         if (var->value->type == EXPRESSION_NODE) {
@@ -72,8 +89,10 @@ void print_var(node_t * node) {
         } else if (var->value->type == TEXT_NODE) {
             text_node * text = (text_node *)var->value;
             P("%s", text->text);
+            free(text);
         }
     }
+    free(exp);
     P(";\n");
 }
 
@@ -81,103 +100,104 @@ void print_print(node_t * node) {
     print_node * print = (print_node *) node;
     // no esta funcionando para variables porque esta faltando el lookup del tipo de variable
     // el lookup deberia rellenar el valor de var_type
-    if (print->content->type == VARIABLE_NODE) { 
-        variable_node * var = (variable_node *)(print->content);
-        if (var->var_type == NUMBER_TYPE) {
-            P("printf(\"%%f\\n\", (double) (%s));\n", var->name);
-        }
-        if(var->var_type == TEXT_TYPE) {
-            P("printf(\"%%s\\n\", %s);\n", var->name);
-        }
+    switch(print->content->type) {
+        case VARIABLE_NODE:
+            ;
+            variable_node * var = (variable_node *)(print->content);
+            if (var->var_type == NUMBER_TYPE)
+                P("printf(\"%%f\\n\", (double) (%s));\n", var->name);
+            if(var->var_type == TEXT_TYPE)
+                P("printf(\"%%s\\n\", %s);\n", var->name);
+            
+            free(var->name);
+            break;
+        case EXPRESSION_NODE:
+            P("printf(\"%%f\\n\", (double) ");
+            print_expression(print->content);
+            P(");\n");
+            break;
+        case TEXT_NODE:
+            ;
+            text_node * text = (text_node *)print->content;
+            P("printf(\"%%s\\n\", %s);\n", text->text);
+            break;
+        default:
+            break;
     }
-    if (print->content->type == EXPRESSION_NODE) {
-        P("printf(\"%%f\\n\", (double) ");
-        print_expression(print->content);
-        P(");\n");
-        
-
-
-        // expression_node * exp = (expression_node *)print->content;
-        // if (exp->expression_type == TEXT) {
-        //     P("printf(\"%%s\\n\", %s);\n", exp->expression);
-        // }
-        // if (exp->expression_type == EXPRESSION) {
-        //     P("printf(\"%%f\\n\", (double) (%s));\n", exp->expression);
-        // }
-    }
+    free(print->content);
 }
 
-void print_variable(node_t * node) {
-    variable_node * var = (variable_node *)node;
-    if (var->var_type == NUMBER_TYPE) {
-        P("printf(\"%%f\\n\", (double) (%s));\n", var->name);
-    }
-    if(var->var_type == TEXT_TYPE) {
-        P("printf(\"%%s\\n\", %s);\n", var->name);
+void switch_print_expression(node_t * node) {
+    switch (node->type) {
+        case EXPRESSION_NODE:
+            print_expression(node);
+            break;
+        case VARIABLE_NODE:
+            ;
+            variable_node * var = (variable_node *)node;
+            P(" %s ", var->name);
+            free(var->name);
+            break;
+        case TEXT_NODE:
+            P(" %s ", ((text_node *)node)->text);
+            free(((text_node *)node)->text);
+            break;
+        case NUMBER_NODE:
+            P(" %s ", ((number_node *)node)->number);
+            free(((number_node *)node)->number);
+            break;
+        case OPERATION_NODE:
+            P(" %s ", ((operation_node *)node)->operation);
+            free(((operation_node *)node)->operation);
+            break;
+        default:
+            break;
     }
 }
 
 void print_expression(node_t * exp) {
     expression_node * node = (expression_node *)exp;
 
-    if (node->first != NULL && node->cant > 0) {
-        switch (node->first->type) {
-            case EXPRESSION_NODE:
-                print_expression(node->first);
-                break;
-            case VARIABLE_NODE:
-                ;
-                variable_node * var = (variable_node *)node->first;
-                P(" %s ", var->name);
-                break;
-            case TEXT_NODE:
-                P(" %s ", ((text_node *)node->first)->text);
-                break;
-            case NUMBER_NODE:
-                P(" %s ", ((number_node *)node->first)->number);
-                break;
-            default:
-                break;
-        }
+    if (node->first != NULL) {
+        switch_print_expression(node->first);
+        free(node->first);
     }
-    if (node->second != NULL && node->cant > 1) {
-        switch (node->second->type) {
-            case EXPRESSION_NODE:
-                print_expression(node->second);
-                break;
-            case VARIABLE_NODE:
-                ;
-                variable_node * var = (variable_node *)node->first;
-                P(" %s ", var->name);
-                break;
-            case TEXT_NODE:
-                P(" %s ", ((text_node *)node->second)->text);
-                break;
-            case NUMBER_NODE:
-                P(" %s ", ((number_node *)node->second)->number);
-                break;
-            default:
-                break;
-        }
+    if (node->second != NULL) {
+        switch_print_expression(node->second);
+        free(node->second);
     }
-    if (node->third != NULL && node->cant > 2) {
-        switch (node->third->type) {
-            case EXPRESSION_NODE:
-                print_expression(node->third);
-                break;
-            case VARIABLE_NODE:
-                ;
-                variable_node * var = (variable_node *)node->first;
-                P(" %s ", var->name);
-                break;
-            case TEXT_NODE:
-                P(" %s ", ((text_node *)node->third)->text);
-                break;
-            case NUMBER_NODE:
-                P(" %s ", ((number_node *)node->third)->number);
-                break;
-            default:
-                break;
-        }
+    if (node->third != NULL) {
+        switch_print_expression(node->third);
+        free(node->third);
     }
+}
+
+void print_if_node(node_t * node) {
+    if_node * aux = (if_node *)node;
+    P("if (");
+    print_expression(aux->condition);
+    free(aux->condition);
+    P(") {\n");
+    block_node * block = (block_node *)aux->then;
+    read_instruction_list((node_list *)block->node_list);
+    free(block);
+    if (aux->otherwise != NULL) {
+        P("\n} else {\n");
+        block = (block_node *)aux->otherwise;
+        read_instruction_list((node_list *)block->node_list);
+        free(block);
+    }
+    P("}\n");
+}
+
+void print_while_node(node_t * node) {
+    while_node * aux = (while_node *)node;
+    P("while (");
+    print_expression(aux->condition);
+    free(aux->condition);
+    P(") {\n");
+    block_node * block = (block_node *)aux->then;
+    read_instruction_list((node_list *)block->node_list);
+    free(block);
+    P("}\n");
 }
