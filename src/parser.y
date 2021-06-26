@@ -49,7 +49,7 @@ int main_init=FALSE;
 %token <string> IF WHILE DO END ELSE
 %token EOL FIN
 %token <number> TEXT_TYPE NUMBER_TYPE BOOLEAN_TYPE LIST_TYPE
-%token WRITE
+%token WRITE READ
 
 %token <string> SYMBOL_NAME
 %token <string> BIN_OP UNI_OP
@@ -58,7 +58,7 @@ int main_init=FALSE;
 
 %type <number> type
 %type <node> full_declare declare assign value expression 
-%type <node> instruction write function_call if if_end while
+%type <node> instruction write read function_call if if_end while
 %type <list> program block
 
 %left BIN_OP
@@ -74,6 +74,7 @@ program: instruction program { $$ = (*program = (node_list *)add_element_to_list
 instruction: full_declare { $$ = add_instruction_node($1); }
     | assign    { $$ = add_instruction_node($1); }
     | write     { $$ = main_init == FALSE ? free_write($1) : add_instruction_node($1); }
+    | read      { $$ = main_init == FALSE ? free_read($1) :add_instruction_node($1); }
     | if        { $$ = main_init == FALSE ? free_if_node($1) : add_instruction_node($1); }
     | while     { $$ = main_init == FALSE ? free_while_node($1) : add_instruction_node($1); }
     | START     { main_init=TRUE; $$=NULL; };
@@ -110,6 +111,8 @@ write: WRITE expression                     { $$ = add_print_node($2); }
     | WRITE SYMBOL_NAME                     { $$ = add_print_node(add_variable_reference($2)); }
     | WRITE TEXT                            { $$ = add_print_node(add_text_node($2)); }
     | WRITE LIST                            { $$ = add_print_node(add_array_node($2)); };
+
+read: READ SYMBOL_NAME                      { $$ = add_read_node(add_variable_reference($2)); };
 
 expression: '(' expression ')'              { $$ = add_expression_node(add_operation_node("("), $2, add_operation_node(")")); }
     | UNI_OP expression                     { $$ = add_expression_node(add_operation_node($1), $2, NULL); }

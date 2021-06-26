@@ -7,6 +7,8 @@
 
 
 
+
+
 void * free_tree(node_list * program) {
 
     if (program == NULL)
@@ -62,6 +64,8 @@ void * free_instruction_node(node_t * node) {
         case PRINT_NODE:
             free_write(nodo->instruction);
             break;
+        case READ_NODE:
+            free_read(nodo->instruction);
         case IF_NODE:
             free_if_node(nodo->instruction);
             break;
@@ -146,6 +150,19 @@ void * free_write(node_t * node) {
             break;
     }
     free(print->content);
+    return NULL;
+}
+
+void * free_read(node_t * node) {
+    read_node * read = (read_node *) node;
+    switch(read->content->type) {
+        case VARIABLE_NODE:
+            free_variable(read->content);
+            break;
+        default:
+            break;
+    }
+    free(read->content);
     return NULL;
 }
 

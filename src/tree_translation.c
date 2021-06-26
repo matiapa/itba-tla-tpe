@@ -13,6 +13,7 @@ FILE * output;
 void yyerror(node_list ** program, char *s);
 
 void print_print(node_t * node);
+void print_read(node_t * node);
 void print_var(node_t * node);
 void print_expression(node_t * node);
 void read_instruction_list(node_list * list);
@@ -44,6 +45,9 @@ void read_instruction_list(node_list * list) {
                 break;
             case PRINT_NODE:
                 print_print(nodo->instruction);
+                break;
+            case READ_NODE:
+                print_read(nodo->instruction);
                 break;
             case IF_NODE:
                 print_if_node(nodo->instruction);
@@ -152,6 +156,25 @@ void print_print(node_t * node) {
     }
     free(print->content);
 }
+
+
+void print_read(node_t * node) {
+    read_node * read = (read_node *) node;
+    
+    switch(read->content->type) {
+        case VARIABLE_NODE:
+            ;
+            variable_node * var = (variable_node *)(read->content);
+            if (var->var_type == NUMBER_TYPE)
+                P("scanf(\"%%lf\", &%s);",var->name); 
+            free(var->name);
+            break;
+        default:
+            break;
+    }
+    free(read->content);
+}
+
 
 void switch_print_expression(node_t * node) {
     switch (node->type) {

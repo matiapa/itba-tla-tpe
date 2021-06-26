@@ -11,6 +11,7 @@ typedef enum {
   OPERATION_NODE,
   VARIABLE_NODE,
   PRINT_NODE,
+  READ_NODE,
   IF_NODE,
   WHILE_NODE,
   BLOCK_NODE,
@@ -82,6 +83,11 @@ typedef struct print_node {
     node_t * content; // EXPRESSION_NODE o VARIABLE_NODE
 } print_node;
 
+typedef struct read_node {
+    node_type type;
+    node_t * content; // VARIABLE_NODE
+} read_node;
+
 typedef struct text_node {
     node_type type;
     char * text;
@@ -113,6 +119,7 @@ node_t * add_instruction_list_node(node_t * node);
 node_t * add_element_to_list(node_list * list, node_t * element);
 
 node_t * add_print_node(node_t * content);
+node_t * add_read_node(node_t * content);
 node_t * add_text_node(char * text);
 node_t * add_array_node(char * array);
 node_t * add_number_node(char * number);

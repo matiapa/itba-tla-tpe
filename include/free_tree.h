@@ -4,6 +4,7 @@
 
 /*-------------------- FUNCIONES ---------------------*/
 void * free_write(node_t * node);
+void * free_read(node_t * node);
 void * free_variable(node_t * node);
 void * free_expression(node_t * node);
 void * free_list(node_list * list);
@@ -17,5 +18,6 @@ void * free_instruction_node(node_t * node);
 void * free_tree(node_list * program);
 void * free_function_call(node_t * node);
 void * free_array_node(node_t * node);
+
 
 #endif
