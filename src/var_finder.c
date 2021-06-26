@@ -134,6 +134,17 @@ var_node * check_and_set_variables_rec(node_t * node,var_node * var_list){
                 check_and_set_variables_internal((node_list *)((block_node *)if_node_var->otherwise)->node_list,var_list);
                 free_list(var_list);
                 break;
+            case WHILE_NODE:
+                ;
+                while_node* while_node_var=(while_node *)node;
+                if(!check_var_type_in_expression(NUMBER_TYPE,(expression_node *)while_node_var->condition,var_list)){
+                    printf("Var in write is type text in expression\n");
+                    error=-1;
+                }
+                var_list->references++;
+                check_and_set_variables_internal( (node_list *)((block_node *)while_node_var->then)->node_list,var_list);
+                free_list(var_list);
+                break;
             default:
                 #ifdef YYDEBUG
                 printf("Algo salio mal var checker\n");

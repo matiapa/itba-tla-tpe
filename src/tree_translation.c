@@ -93,6 +93,9 @@ void print_var(node_t * node) {
                 break;
         }
     }
+    else{
+        P("%s",var->name);
+    }
     free(var->name);
 
     if (var->value != NULL) {
