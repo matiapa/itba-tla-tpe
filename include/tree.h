@@ -19,7 +19,7 @@ typedef enum {
   INSTRUCTION_NODE,
   NEGATION_NODE,
   EXPRESSION_NODE,
-  FUNCTION_CALL_NODE
+  LIST_OP_NODE
 } node_type;
 
 typedef struct node_s {
@@ -54,11 +54,11 @@ typedef struct instruction_node {
     node_t * instruction; // INSTRUCTION_NODE
 } instruction_node;
 
-typedef struct function_call_node {
+typedef struct list_op_node {
     node_type type;
-    char * function_name;
+    char * operator;
     node_t * input_list;    // ARRAY_NODE or VARIABLE_NODE
-} function_call_node;
+} list_op_node;
 
 typedef struct block_node {
     node_type type;
@@ -129,7 +129,7 @@ node_t * add_while_node(node_t * condition, node_t * block);
 
 node_t * add_operation_node(char * operation);
 
-node_t * add_function_call(char * function_name, node_t * input);
+node_t * add_list_operation(char * operator, node_t * input);
 
 #endif
 

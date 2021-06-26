@@ -3,13 +3,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-node_t * add_function_call(char * function_name, node_t * input_list) {
-    function_call_node * node = malloc(sizeof(function_call_node));
+node_t * add_list_operation(char * operator, node_t * input_list) {
+    list_op_node * node = malloc(sizeof(list_op_node));
 
-    node->type = FUNCTION_CALL_NODE;
-    node->function_name = malloc(strlen(function_name) + 1);
+    node->type = LIST_OP_NODE;
+    node->operator = malloc(strlen(operator) + 1);
     node->input_list = input_list;
-    strcpy(node->function_name, function_name);
+    strcpy(node->operator, operator);
 
     return (node_t *) node;
 }

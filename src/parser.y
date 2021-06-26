@@ -40,25 +40,21 @@ int main_init=FALSE;
     node_list * list;
 }
 
-%token START
+%token START EOL FIN
 %token MEAN MEDIAN MODE STDEV RANGE QTR1 QTR3 INTER_QTR
 %token COMB PERM FACT
-%token OF
+%token ASSIGN WRITE READ
 
-%token ASSIGN
 %token <string> IF WHILE DO END ELSE
-%token EOL FIN
-%token <number> TEXT_TYPE NUMBER_TYPE BOOLEAN_TYPE LIST_TYPE
-%token WRITE READ
-
 %token <string> SYMBOL_NAME
-%token <string> BIN_OP UNI_OP
+%token <string> BIN_OP UNI_OP LIST_OP
 %token <string> NUMBER TEXT BOOLEAN LIST
-%token <string> FUNCTION_CALL
+
+%token <number> TEXT_TYPE NUMBER_TYPE BOOLEAN_TYPE LIST_TYPE
 
 %type <number> type
 %type <node> full_declare declare assign value expression 
-%type <node> instruction write read function_call if if_end while
+%type <node> instruction write read list_operation if if_end while
 %type <list> program block
 
 %left BIN_OP
@@ -104,9 +100,6 @@ value: expression   { $$ = $1; }
     | TEXT          { $$ = add_text_node($1); }
     | LIST          { $$ = add_array_node($1); };
 
-function_call: FUNCTION_CALL LIST           { $$ = add_function_call($1, add_array_node($2)); }
-    | FUNCTION_CALL SYMBOL_NAME             { $$ = add_function_call($1, add_variable_reference($2)); };
-
 write: WRITE expression                     { $$ = add_print_node($2); }
     | WRITE SYMBOL_NAME                     { $$ = add_print_node(add_variable_reference($2)); }
     | WRITE TEXT                            { $$ = add_print_node(add_text_node($2)); }
@@ -117,7 +110,11 @@ read: READ SYMBOL_NAME                      { $$ = add_read_node(add_variable_re
 expression: '(' expression ')'              { $$ = add_expression_node(add_operation_node("("), $2, add_operation_node(")")); }
     | UNI_OP expression                     { $$ = add_expression_node(add_operation_node($1), $2, NULL); }
     | expression BIN_OP expression          { $$ = add_expression_node($1, add_operation_node($2), $3); }
-    | function_call                         { $$ = add_expression_node($1, NULL, NULL); }
+    | list_operation                        { $$ = add_expression_node($1, NULL, NULL); }
     | NUMBER                                { $$ = add_expression_node(add_number_node($1), NULL, NULL); }
     | '$' SYMBOL_NAME                       { $$ = add_expression_node(add_variable_reference($2), NULL, NULL); };
+
+list_operation: LIST_OP LIST                { $$ = add_list_operation($1, add_array_node($2)); }
+    | LIST_OP SYMBOL_NAME                   { $$ = add_list_operation($1, add_variable_reference($2)); };
+
 %%

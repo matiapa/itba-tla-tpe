@@ -28,7 +28,7 @@ void check_and_set_variables_rec(node_t * node,var_node ** var_list);
 void check_var_types_in_value(variable_node* variable_node_var,var_node * var_list );
 int check_var_type_in_expression(int type,expression_node * expr,var_node * var_list);
 int check_var_type_in_expression_rec(int type,node_t * node,var_node * var_list);
-int check_var_type_in_function_call(int type,function_call_node * node,var_node * var_list);
+int check_var_type_in_list_op(int type,list_op_node * node,var_node * var_list);
 
 int check_and_set_variables(node_list * tree){
     var_node varinit;
@@ -211,9 +211,25 @@ void check_var_types_in_value(variable_node* variable_node_var,var_node * var_li
                 error=-1;
             }
             break;
+        case VARIABLE_NODE:
+            ;
+            int type =check_if_exists(var_list,((variable_node *)variable_node_var->value)->name);
+            if (type==-1)
+            {
+                printf("Var %s not declared yet \n",variable_node_var->name);
+                error=-1;
+            }
+            variable_node_var->var_type=type;
+            if (type!=variable_node_var->var_type)
+            {
+               printf("Var %s is different type than %s \n",variable_node_var->name,((variable_node *)variable_node_var->value)->name);
+               error=-1;
+            }
+            
+            break;
         default:
             #ifdef YYDEBUG
-            printf("Algo salio mal var checker print_node\n");
+            printf("Algo salio mal var checker types in value\n");
             #endif
             break;
     }
@@ -258,12 +274,12 @@ int check_var_type_in_expression_rec(int type,node_t * node,var_node * var_list)
         case EXPRESSION_NODE:
             return check_var_type_in_expression(type,(expression_node *)node,var_list);
             break;
-        case FUNCTION_CALL_NODE:
+        case LIST_OP_NODE:
             ;
-            int result=check_var_type_in_function_call(LIST_TYPE,(function_call_node *)node,var_list);
+            int result=check_var_type_in_list_op(LIST_TYPE,(list_op_node *)node,var_list);
             if (!result)
             {
-                printf("Var in function not of correct type\n");
+                printf("Var in list operation not of correct type\n");
                 error=-1;
             }
             return type==NUMBER_TYPE;
@@ -277,7 +293,7 @@ int check_var_type_in_expression_rec(int type,node_t * node,var_node * var_list)
     return FALSE; //SHOULD NOT BE HERE
 }
 
-int check_var_type_in_function_call(int type,function_call_node * node,var_node * var_list){
+int check_var_type_in_list_op(int type,list_op_node * node,var_node * var_list){
     switch(node->input_list->type) {
         case VARIABLE_NODE:
             ;
@@ -285,7 +301,7 @@ int check_var_type_in_function_call(int type,function_call_node * node,var_node 
             int type_var =check_if_exists(var_list,variable_node_var->name);
             if (type_var==-1)
             {
-                printf("Var %s in function not declared yet \n",variable_node_var->name);
+                printf("Var %s in list operation not declared yet \n",variable_node_var->name);
                 error=-1;
             }
             variable_node_var->var_type=type_var;
