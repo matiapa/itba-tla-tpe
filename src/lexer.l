@@ -35,7 +35,7 @@ neq		                    { strcpy(yylval.string, "!="); return BIN_OP; }
 eq		                    { strcpy(yylval.string, "=="); return BIN_OP; }
 and		                    { strcpy(yylval.string, "&&"); return BIN_OP; }
 or		                    { strcpy(yylval.string, "||"); return BIN_OP; }
-not		                    { strcpy(yylval.string, "!"); return BIN_OP; }
+not		                    { strcpy(yylval.string, "!"); return UNI_OP; }
 [-~]                        { strcpy(yylval.string, yytext); return UNI_OP; }
 if                          { strcpy(yylval.string, yytext); return IF; }
 else                        { strcpy(yylval.string, yytext); return ELSE; }

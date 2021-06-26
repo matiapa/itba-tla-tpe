@@ -1,11 +1,14 @@
 # NOT WORKING
 start
 
-number n1 = 1
-number n2 = n1
+#number n1 = 1
+#number n2 = n1
 
 #text t1 = "hola"
 #text t2 = t1
 
 #list l1 = [1,2]
 #list l2 = l1
+
+#text a = "hola"
+#number n = a

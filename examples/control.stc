@@ -1,0 +1,30 @@
+# WORKING
+
+start
+
+write "Enter n1"
+number n1
+read n1
+
+number n2 = 1
+while $n2 <= $n1 do
+    write n2
+    if $n2 <= $n1 / 2 do
+        number n3 = 0
+        while $n3 < $n2 do
+            if 2 > 3 or 1 do
+                write "-"
+                n3 = $n3 + 1
+            end
+        end
+    else
+        number n3 = 0
+        while $n3 < $n2 do
+            if not (2 > 3) do
+                write "+"
+                n3 = $n3 + 1
+            end
+        end
+    end
+    n2 = $n2 + 1
+end
