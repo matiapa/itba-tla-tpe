@@ -1,0 +1,14 @@
+# WORKING
+start
+
+write [1,2]
+write mean of [1,2]
+
+list l1 = [2,3]
+write l1
+write mean of l1
+
+list l2 = [3,4]
+number n1 = mean of l2
+write l2
+write n1

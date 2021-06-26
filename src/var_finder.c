@@ -31,7 +31,13 @@ int check_var_type_in_expression_rec(int type,node_t * node,var_node * var_list)
 int check_var_type_in_function_call(int type,function_call_node * node,var_node * var_list);
 
 int check_and_set_variables(node_list * tree){
-    check_and_set_variables_internal(tree,NULL);
+    var_node varinit;
+    varinit.references=2;
+    varinit.next=NULL;
+    varinit.var_type=-1;
+    var_node * var_list=&varinit;
+
+    check_and_set_variables_internal(tree,&var_list);
     return error;
 }
 
@@ -39,13 +45,12 @@ void check_and_set_variables_internal(node_list * tree,var_node ** var_list){
     node_list * aux = tree;
     while (aux != NULL) {
         instruction_node * nodo = (instruction_node *)aux->node;
-        if(var_list!=NULL)
-            check_and_set_variables_rec((node_t *)nodo->instruction,var_list);
+        check_and_set_variables_rec((node_t *)nodo->instruction,var_list);
         aux = aux->next;
     }
     if (var_list!=NULL)
     {
-       *var_list=free_list(*var_list);  //todo mejorar free
+       (*var_list)=free_list(*var_list);  //todo mejorar free
     }
     
 }
@@ -134,10 +139,16 @@ void check_and_set_variables_rec(node_t * node,var_node ** var_list){
                 }
                 (*var_list)->references++;
                 check_and_set_variables_internal( (node_list *)((block_node *)if_node_var->then)->node_list,var_list);
-                *var_list=free_list(*var_list);
-                (*var_list)->references++;
-                check_and_set_variables_internal((node_list *)((block_node *)if_node_var->otherwise)->node_list,var_list);
-                *var_list=free_list(*var_list);
+                ;
+                // *var_list=free_list(*var_list);
+                if (if_node_var->otherwise!=NULL)
+                {
+                   (*var_list)->references++;
+                    check_and_set_variables_internal((node_list *)((block_node *)if_node_var->otherwise)->node_list,var_list);
+                    // *var_list=free_list(*var_list);
+                }
+                
+                
                 break;
             case WHILE_NODE:
                 ;
@@ -148,7 +159,7 @@ void check_and_set_variables_rec(node_t * node,var_node ** var_list){
                 }
                 (*var_list)->references++;
                 check_and_set_variables_internal( (node_list *)((block_node *)while_node_var->then)->node_list,var_list);
-                 *var_list=free_list(*var_list);
+                //  *var_list=free_list(*var_list);
                 break;
             default:
                 #ifdef YYDEBUG
@@ -163,13 +174,13 @@ void check_var_types_in_value(variable_node* variable_node_var,var_node * var_li
     switch (variable_node_var->value->type){
         case TEXT_NODE:
             if (variable_node_var->var_type!=TEXT_TYPE){
-                printf("Var %s is of type text and assigned not text\n",variable_node_var->name);
+                printf("Var %s is not of type text and assigned text\n",variable_node_var->name);
                 error=-1;
             }
             break;
         case ARRAY_NODE:
             if (variable_node_var->var_type!=LIST_TYPE){
-                printf("Var %s is of type list and assigned not list\n",variable_node_var->name);
+                printf("Var %s is not of type list and assigned list\n",variable_node_var->name);
                 error=-1;
             }
             break;
@@ -227,7 +238,14 @@ int check_var_type_in_expression_rec(int type,node_t * node,var_node * var_list)
             return check_var_type_in_expression(type,(expression_node *)node,var_list);
             break;
         case FUNCTION_CALL_NODE:
-            return check_var_type_in_function_call(LIST_TYPE,(function_call_node *)node,var_list);
+            ;
+            int result=check_var_type_in_function_call(LIST_TYPE,(function_call_node *)node,var_list);
+            if (!result)
+            {
+                printf("Var in function not of correct type\n");
+                error=-1;
+            }
+            return type==NUMBER_TYPE;
             break;
         default:
             #ifdef YYDEBUG
@@ -239,14 +257,14 @@ int check_var_type_in_expression_rec(int type,node_t * node,var_node * var_list)
 }
 
 int check_var_type_in_function_call(int type,function_call_node * node,var_node * var_list){
-    switch(node->type) {
+    switch(node->input_list->type) {
         case VARIABLE_NODE:
             ;
-            variable_node* variable_node_var=(variable_node *)node;
+            variable_node* variable_node_var=(variable_node *)node->input_list;
             int type_var =check_if_exists(var_list,variable_node_var->name);
             if (type_var==-1)
             {
-                printf("Var not declared yet %s\n",variable_node_var->name);
+                printf("Var %s in function not declared yet \n",variable_node_var->name);
                 error=-1;
             }
             variable_node_var->var_type=type_var;
@@ -260,7 +278,7 @@ int check_var_type_in_function_call(int type,function_call_node * node,var_node 
         
         default:
             #ifdef YYDEBUG
-            printf("Algo salio mal var checker expression rec\n");
+            printf("Algo salio mal var checker func call\n");
             #endif
             break;
     }
@@ -280,11 +298,13 @@ var_node * create_var_node(int type, char * name){
 
 
 void add_to_list(var_node ** list,var_node * element){
-    if (list!=NULL){
+    if (*list!=NULL){
         (*list)->references++;
         element->next=*list;
-        *list=element;
+        
     }
+    *list=element;
+
 }
 
 var_node * free_list(var_node * list){

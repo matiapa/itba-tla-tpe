@@ -126,6 +126,9 @@ void print_print(node_t * node) {
                 P("printf(\"%%lf\\n\", (double) (%s));\n", var->name);
             if(var->var_type == TEXT_TYPE)
                 P("printf(\"%%s\\n\", %s);\n", var->name);
+            if (var->var_type == LIST_TYPE) {
+                P("print_array(%s, sizeof(%s)/sizeof(double));\n", var->name, var->name);
+            }
             free(var->name);
             break;
         case EXPRESSION_NODE:
@@ -139,6 +142,11 @@ void print_print(node_t * node) {
             P("printf(\"%%s\\n\", %s);\n", text->text);
             free(text->text);
             break;
+        case ARRAY_NODE:
+            ;
+            array_node * array = (array_node *)print->content;
+            P("str_caller(\"%s\", %s);\n", array->array, "print_array");
+            free(array->array);
         default:
             break;
     }

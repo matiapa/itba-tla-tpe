@@ -43,7 +43,6 @@ double mean(double * list, int size) {
 
 double mode(double * list, int size) {
     sort(list, size);
-    printf("List is\n");
     double mode = 0;
     int occurrences = 0, last_occurrences = 0;
     for (int i = 0; i < size-1; i++) {
@@ -97,4 +96,13 @@ double qtr3(double * list, int size) {
 
 double inter_qtr(double * list, int size) {
     return qtr3(list, size) - qtr1(list, size);
+}
+
+double print_array(double * list_var, int size) { 
+    printf("[");
+    for (int i = 0; i < size; i++) {
+        printf(" %lf ", list_var[i]);
+    }
+    printf("]\n");
+    return 0;
 }
