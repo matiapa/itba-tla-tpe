@@ -16,6 +16,7 @@ void free_text_node(node_t * node);
 void free_instruction_list(node_list * list);
 void free_number_node(node_t * node);
 void free_operation_node(node_t * node);
+void free_instruction_node(node_t * node);
 
 void free_tree(node_list * program) {
     
@@ -23,35 +24,77 @@ void free_tree(node_list * program) {
     printf("Empezando con el translate de código\n");
     #endif
 
-    free_instruction_list(program);
+    if (program == NULL)
+        return;
 
+    switch (program->type) {
+        case LIST_NODE:
+            free_instruction_list(program);
+            break;
+        case INSTRUCTION_NODE:
+            free_instruction_node((node_t *)program);
+        case BLOCK_NODE:
+            free_instruction_list((node_list *)(((block_node *)program)->node_list));
+            free(program);
+            break;
+        case VARIABLE_NODE:
+            free_variable((node_t *)program);
+            break;
+        case EXPRESSION_NODE:
+            free_expression((node_t *)program);
+            break;
+        case TEXT_NODE:
+            free_text_node((node_t *)program);
+            break;
+        case NUMBER_NODE:
+            free_number_node((node_t *)program);
+            break;
+        case WHILE_NODE:
+            free_while_node((node_t *)program);
+            break;
+        case IF_NODE:
+            free_if_node((node_t *)program);
+            break;
+        case OPERATION_NODE:
+            free_operation_node((node_t *)program);
+            break;
+        default:
+            break;
+    }
+    
+    free(program);
+
+}
+
+void free_instruction_node(node_t * node) {
+    instruction_node * nodo = (instruction_node *)node;
+    switch(nodo->instruction->type) {
+        case VARIABLE_NODE:
+            free_variable(nodo->instruction);
+            break;
+        case PRINT_NODE:
+            free_write(nodo->instruction);
+            break;
+        case IF_NODE:
+            free_if_node(nodo->instruction);
+            break;
+        case WHILE_NODE:
+            free_while_node(nodo->instruction);
+            break;
+        default:
+            #ifdef YYDEBUG
+            printf("Algo salio mal\n");
+            #endif                
+            break;
+    }
+    free(nodo->instruction);
 }
 
 void free_instruction_list(node_list * list) {
     node_list * aux = list;
     while (aux != NULL) {
-        instruction_node * nodo = (instruction_node *)aux->node;
-        switch(nodo->instruction->type) {
-            case VARIABLE_NODE:
-                free_variable(nodo->instruction);
-                break;
-            case PRINT_NODE:
-                free_write(nodo->instruction);
-                break;
-            case IF_NODE:
-                free_if_node(nodo->instruction);
-                break;
-            case WHILE_NODE:
-                free_while_node(nodo->instruction);
-                break;
-            default:
-                #ifdef YYDEBUG
-                printf("Algo salio mal\n");
-                #endif                
-                break;
-        }
-        free(nodo->instruction);
-        free(nodo);
+        free_instruction_node(aux->node);
+        free(aux->node);
         node_list * next = aux->next;
         free(aux);
         aux = next;
