@@ -178,6 +178,7 @@ void switch_print_expression(node_t * node) {
             break;
         case FUNCTION_CALL_NODE:
             print_function_call(node);
+            break;
         default:
             break;
     }
