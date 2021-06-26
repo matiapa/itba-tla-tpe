@@ -5,24 +5,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-/*-------------------- FUNCIONES ---------------------*/
-void free_write(node_t * node);
-void free_variable(node_t * node);
-void free_expression(node_t * node);
-void free_list(node_list * list);
-void free_if_node(node_t * node);
-void free_while_node(node_t * node);
-void free_text_node(node_t * node);
-void free_instruction_list(node_list * list);
-void free_number_node(node_t * node);
-void free_operation_node(node_t * node);
-void free_instruction_node(node_t * node);
 
 
-void free_tree(node_list * program) {
+
+
+void * free_tree(node_list * program) {
 
     if (program == NULL)
-        return;
+        return NULL;
 
     switch (program->type) {
         case LIST_NODE:
@@ -60,11 +50,13 @@ void free_tree(node_list * program) {
     }
     
     free(program);
-
+    return NULL;
 }
 
-void free_instruction_node(node_t * node) {
+void * free_instruction_node(node_t * node) {
     instruction_node * nodo = (instruction_node *)node;
+    if (nodo == NULL)
+        return NULL;
     switch(nodo->instruction->type) {
         case VARIABLE_NODE:
             free_variable(nodo->instruction);
@@ -72,6 +64,8 @@ void free_instruction_node(node_t * node) {
         case PRINT_NODE:
             free_write(nodo->instruction);
             break;
+        case READ_NODE:
+            free_read(nodo->instruction);
         case IF_NODE:
             free_if_node(nodo->instruction);
             break;
@@ -85,9 +79,10 @@ void free_instruction_node(node_t * node) {
             break;
     }
     free(nodo->instruction);
+    return NULL;
 }
 
-void free_instruction_list(node_list * list) {
+void * free_instruction_list(node_list * list) {
     node_list * aux = list;
     while (aux != NULL) {
         free_instruction_node(aux->node);
@@ -96,9 +91,10 @@ void free_instruction_list(node_list * list) {
         free(aux);
         aux = next;
     }
+    return NULL;
 }
 
-void free_variable(node_t * node) {
+void * free_variable(node_t * node) {
     variable_node * var = (variable_node *) node;
     
     free(var->name);
@@ -107,24 +103,35 @@ void free_variable(node_t * node) {
             free_expression(var->value);
         } else if (var->value->type == TEXT_NODE) {
             free_text_node(var->value);
+        } else if (var->value->type == ARRAY_NODE) {
+            free_array_node(var->value);
         }
     }
     free(var->value);
+    return NULL;
 }
 
-void free_text_node(node_t * node) {
+void * free_text_node(node_t * node) {
     free(((text_node *) node)->text);
+    return NULL;
 }
 
-void free_number_node(node_t * node) {
+void * free_number_node(node_t * node) {
     free(((number_node *) node)->number);
+    return NULL;
 }
 
-void free_operation_node(node_t * node) {
+void * free_operation_node(node_t * node) {
     free(((operation_node *) node)->operation);
+    return NULL;
 }
 
-void free_write(node_t * node) {
+void * free_array_node(node_t * node) {
+    free(((array_node *) node)->array);
+    return NULL;
+}
+
+void * free_write(node_t * node) {
     print_node * print = (print_node *) node;
     switch(print->content->type) {
         case VARIABLE_NODE:
@@ -136,13 +143,30 @@ void free_write(node_t * node) {
         case TEXT_NODE:
             free_text_node(print->content);
             break;
+        case ARRAY_NODE:
+            free_array_node(print->content);
+            break;
         default:
             break;
     }
     free(print->content);
+    return NULL;
 }
 
-void switch_free_expression(node_t * node) {
+void * free_read(node_t * node) {
+    read_node * read = (read_node *) node;
+    switch(read->content->type) {
+        case VARIABLE_NODE:
+            free_variable(read->content);
+            break;
+        default:
+            break;
+    }
+    free(read->content);
+    return NULL;
+}
+
+void * switch_free_expression(node_t * node) {
     switch (node->type) {
         case EXPRESSION_NODE:
             free_expression(node);
@@ -159,12 +183,16 @@ void switch_free_expression(node_t * node) {
         case OPERATION_NODE:
             free_operation_node(node);
             break;
+        case FUNCTION_CALL_NODE:
+            free_function_call(node);
+            break;
         default:
             break;
     }
+    return NULL;
 }
 
-void free_expression(node_t * exp) {
+void * free_expression(node_t * exp) {
     expression_node * node = (expression_node *)exp;
 
     if (node->first != NULL) {
@@ -179,9 +207,10 @@ void free_expression(node_t * exp) {
         switch_free_expression(node->third);
         free(node->third);
     }
+    return NULL;
 }
 
-void free_if_node(node_t * node) {
+void * free_if_node(node_t * node) {
     if_node * aux = (if_node *)node;
     free_expression(aux->condition);
     free(aux->condition);
@@ -193,13 +222,28 @@ void free_if_node(node_t * node) {
         free_instruction_list((node_list *)block->node_list);
         free(block);
     }
+    return NULL;
 }
 
-void free_while_node(node_t * node) {
+void * free_while_node(node_t * node) {
     while_node * aux = (while_node *)node;
     free_expression(aux->condition);
     free(aux->condition);
     block_node * block = (block_node *)aux->then;
     free_instruction_list((node_list *)block->node_list);
     free(block);
+    return NULL;
+}
+
+void * free_function_call(node_t * node) {
+    function_call_node * fcall = (function_call_node *)node;
+
+    if (fcall->input_list->type == ARRAY_NODE) {
+        free_array_node(fcall->input_list);
+    } else if (fcall->input_list->type == VARIABLE_NODE) {
+        free_variable(fcall->input_list);
+    }
+    free(fcall->input_list);
+    free(fcall->function_name);
+    return NULL;
 }
