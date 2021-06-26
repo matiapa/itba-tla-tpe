@@ -15,3 +15,5 @@ char * str_to_fun(char * str) {
     if(!strcmp(str, "mcm")) return "mcm";
     return NULL;
 }
+
+void print_array(double * list_var, int size);

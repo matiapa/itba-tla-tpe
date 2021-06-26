@@ -8,6 +8,8 @@ int fileno(FILE * stream);
 
 %option yylineno
 
+DECIMAL [-]?[0-9]+(\.[0-9]+)?
+
 %%
 start      { return START;}
 number     { yylval.number = NUMBER_TYPE; return NUMBER_TYPE; }
@@ -21,8 +23,8 @@ write      { return WRITE; }
 }
 
 \"[^\"]+\"                  { strcpy(yylval.string, yytext); return TEXT; }
-[-]?[0-9]+(\.[0-9]+)?       { strcpy(yylval.string, yytext); return NUMBER; }
-\[[ \t]*[0-9]([ \t]*,[ \t]*[0-9])*[ \t]*\]  { strcpy(yylval.string, yytext); return LIST; }
+{DECIMAL}                   { strcpy(yylval.string, yytext); return NUMBER; }
+\[[ \t]*{DECIMAL}([ \t]*,[ \t]*{DECIMAL})*[ \t]*\]  { strcpy(yylval.string, yytext); return LIST; }
 
 =                           { return ASSIGN;     }
 
