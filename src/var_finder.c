@@ -211,9 +211,25 @@ void check_var_types_in_value(variable_node* variable_node_var,var_node * var_li
                 error=-1;
             }
             break;
+        case VARIABLE_NODE:
+            ;
+            int type =check_if_exists(var_list,((variable_node *)variable_node_var->value)->name);
+            if (type==-1)
+            {
+                printf("Var %s not declared yet \n",variable_node_var->name);
+                error=-1;
+            }
+            variable_node_var->var_type=type;
+            if (type!=variable_node_var->var_type)
+            {
+               printf("Var %s is different type than %s \n",variable_node_var->name,((variable_node *)variable_node_var->value)->name);
+               error=-1;
+            }
+            
+            break;
         default:
             #ifdef YYDEBUG
-            printf("Algo salio mal var checker print_node\n");
+            printf("Algo salio mal var checker types in value\n");
             #endif
             break;
     }
