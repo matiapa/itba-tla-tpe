@@ -26,6 +26,7 @@ extern void * malloc();
 
 int yydebug=1;
 int recursion = 0;
+int main_init=FALSE;
 
 %}
 
@@ -70,10 +71,11 @@ program: instruction program { $$ = (*program = (node_list *)add_element_to_list
     | FIN { $$ = (*program = (node_list *)add_instruction_list_node(NULL)); };
 
 instruction: full_declare { $$ = add_instruction_node($1); }
-    | assign { $$ = add_instruction_node($1); }
-    | write { $$ = add_instruction_node($1); }
-    | if { $$ = add_instruction_node($1); }
-    | while { $$ = add_instruction_node($1); };
+    | assign    { $$ = add_instruction_node($1); }
+    | write     { $$ = main_init==FALSE ? NULL :add_instruction_node($1); }
+    | if        { $$ = main_init==FALSE ? NULL :add_instruction_node($1); }
+    | while     { $$ = main_init==FALSE ? NULL : add_instruction_node($1); }
+    | START     { main_init=TRUE; $$=NULL; };
 
 block: instruction block { $$ = (node_list *)add_element_to_list($2, $1); }
     | EOL block { $$ = $2; }

@@ -9,7 +9,7 @@ int fileno(FILE * stream);
 %option yylineno
 
 %%
-
+start      { return START;}
 number     { yylval.number = NUMBER_TYPE; return NUMBER_TYPE; }
 text       { yylval.number = TEXT_TYPE; return TEXT_TYPE; }
 boolean    { yylval.number = BOOLEAN_TYPE; return BOOLEAN_TYPE; }
