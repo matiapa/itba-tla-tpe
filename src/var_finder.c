@@ -28,6 +28,7 @@ void check_and_set_variables_rec(node_t * node,var_node ** var_list);
 void check_var_types_in_value(variable_node* variable_node_var,var_node * var_list );
 int check_var_type_in_expression(int type,expression_node * expr,var_node * var_list);
 int check_var_type_in_expression_rec(int type,node_t * node,var_node * var_list);
+int check_var_type_in_function_call(int type,function_call_node * node,var_node * var_list);
 
 int check_and_set_variables(node_list * tree){
     check_and_set_variables_internal(tree,NULL);
@@ -225,6 +226,9 @@ int check_var_type_in_expression_rec(int type,node_t * node,var_node * var_list)
         case EXPRESSION_NODE:
             return check_var_type_in_expression(type,(expression_node *)node,var_list);
             break;
+        case FUNCTION_CALL_NODE:
+            return check_var_type_in_function_call(LIST_TYPE,(function_call_node *)node,var_list);
+            break;
         default:
             #ifdef YYDEBUG
             printf("Algo salio mal var checker expression rec\n");
@@ -234,6 +238,34 @@ int check_var_type_in_expression_rec(int type,node_t * node,var_node * var_list)
     return FALSE; //SHOULD NOT BE HERE
 }
 
+int check_var_type_in_function_call(int type,function_call_node * node,var_node * var_list){
+    switch(node->type) {
+        case VARIABLE_NODE:
+            ;
+            variable_node* variable_node_var=(variable_node *)node;
+            int type_var =check_if_exists(var_list,variable_node_var->name);
+            if (type_var==-1)
+            {
+                printf("Var not declared yet %s\n",variable_node_var->name);
+                error=-1;
+            }
+            variable_node_var->var_type=type_var;
+            return type_var==type;
+            break;
+        
+        case ARRAY_NODE:
+            //TODO ?
+            return TRUE;
+            break;
+        
+        default:
+            #ifdef YYDEBUG
+            printf("Algo salio mal var checker expression rec\n");
+            #endif
+            break;
+    }
+    return FALSE;
+}
 
 
 var_node * create_var_node(int type, char * name){
