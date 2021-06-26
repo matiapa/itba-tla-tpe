@@ -79,7 +79,7 @@ var_node * check_and_set_variables_rec(node_t * node,var_node * var_list){
                             printf("Var %s not declared yet \n",variable_node_var->name);
                             error=-1;
                         }
-                        variable_node_var->type=type;
+                        variable_node_var->var_type=type;
                         check_var_types_in_value(variable_node_var,var_list);
                 }
                 if (variable_node_var->declared==FALSE && variable_node_var->value==NULL){ //caso donde solo se usa la var
@@ -90,7 +90,7 @@ var_node * check_and_set_variables_rec(node_t * node,var_node * var_list){
                         printf("Var %s not declared yet \n",variable_node_var->name);
                         error=-1;
                     }
-                    variable_node_var->type=type;
+                    variable_node_var->var_type=type;
                 }
                 
                 break;
@@ -107,7 +107,7 @@ var_node * check_and_set_variables_rec(node_t * node,var_node * var_list){
                         break;
                 
                     case TEXT_NODE:
-                    //TODO implement esto
+                    //va vacio porque no hay variables aca dentro
                         break;
                     
                     default:
