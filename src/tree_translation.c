@@ -94,6 +94,9 @@ void print_var(node_t * node) {
         // Es una asignacion/referenciacion
         P("%s", (var->name));
     }
+    else{
+        P("%s",var->name);
+    }
     free(var->name);
 
     if (var->value != NULL) {
