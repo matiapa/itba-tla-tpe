@@ -108,6 +108,10 @@ void print_var(node_t * node) {
             array->array[strlen(array->array)-1] = 0;
             P("{%s}", array->array+1);
             free(array->array);
+        } else if (var->value->type == VARIABLE_NODE) {
+            variable_node * var_node = (variable_node *) var->value;
+            P("%s", var_node->name);
+            free(var_node->name);
         }
         free(var->value);
     }
