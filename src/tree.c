@@ -3,16 +3,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-node_t * add_expression_node(node_t * first, node_t * second, node_t * third, int cant) {
+node_t * add_expression_node(node_t * first, node_t * second, node_t * third) {
     expression_node * expression = calloc(1, sizeof(expression_node));
     expression->type = EXPRESSION_NODE;
-    expression->cant = cant;
-    if (first != NULL)
-        expression->first = first;
-    if (second != NULL)
-        expression->second = second;
-    if (third != NULL)
-        expression->third = third;
+    expression->first = first;
+    expression->second = second;
+    expression->third = third;
 
     return (node_t *)expression;
 }
@@ -114,7 +110,7 @@ node_t * add_if_node(node_t * condition, node_t * then, node_t * otherwise) {
     return (node_t *)new;
 }
 
-node_t * add_if_block(node_list * list) {
+node_t * add_block_node(node_list * list) {
     block_node * block = malloc(sizeof(block_node));
     block->node_list = (node_t *)list;
     block->type = BLOCK_NODE;
@@ -163,4 +159,12 @@ node_t * add_operation_node(char * operation) {
     node->type = OPERATION_NODE;
 
     return (node_t *)node;
+}
+
+node_t * add_while_node(node_t * condition, node_t * block) {
+    while_node * new = (while_node *)malloc(sizeof(while_node));
+    new->condition = condition;
+    new->then = block;
+    new->type = WHILE_NODE;
+    return (node_t *)new;
 }

@@ -1,22 +1,15 @@
-text saludo = "Hola mundo"
-write saludo
-
-# Este es un comentario
-
 number n1 = 2 * 4
 number n2 = n1 >= 4
 write n1
 write n2
-write "hola mundo"
-number n3 = 3
+number n3
 n3 = 4
-write n3+3
+write n3
 write "-------"
-write 2 + 40
-
+while n1 > n2 do
 if n3 > n2 do
-write "hola"
-number n4 = 50
-else
-number n5 = 100
+write "n3 > n2"
+end
+n2 = n2 + 1
+write n2
 end

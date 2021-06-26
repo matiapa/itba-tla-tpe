@@ -54,7 +54,7 @@ int recursion = 0;
 %token <string> NUMBER TEXT BOOLEAN ARRAY
 
 %type <number> type
-%type <node> declare full_declare value assign instruction write expression write_expression if 
+%type <node> declare full_declare value assign instruction write expression write_expression if if_end while
 %type <list> program block
 
 %left BIN_OP
@@ -70,15 +70,20 @@ program: instruction program { $$ = (*program = (node_list *)add_element_to_list
 instruction: full_declare { $$ = add_instruction_node($1); }
     | assign { $$ = add_instruction_node($1); }
     | write { $$ = add_instruction_node($1); }
-    | if { $$ = add_instruction_node($1); };
+    | if { $$ = add_instruction_node($1); }
+    | while { $$ = add_instruction_node($1); };
 
 block: instruction block { $$ = (node_list *)add_element_to_list($2, $1); }
     | EOL block { $$ = $2; }
     | instruction { $$ = (node_list *)add_instruction_list_node($1); }
     | EOL { $$ = (node_list *)add_instruction_list_node(NULL); };
 
-if: IF expression DO block END { $$ = add_if_node($2, add_if_block($4), NULL); }
-    | IF expression DO block ELSE block END { $$ = add_if_node($2, add_if_block($4), add_if_block($6)); };
+if: IF expression DO block if_end { $$ = add_if_node($2, add_block_node($4), $5); };
+
+while: WHILE expression DO block END { $$ = add_while_node($2, add_block_node($4)); };
+
+if_end: END { $$ = NULL; }
+    | ELSE block END { $$ = add_block_node($2); };
     
 full_declare: declare '=' value { $$ = add_value_variable($1, $3); }
     | declare { $$ = $1; };
@@ -96,12 +101,12 @@ write: WRITE TEXT                           { $$ = add_print_node(add_text_node(
     | WRITE SYMBOL_NAME                     { $$ = add_print_node(add_variable_reference($2)); } 
     | WRITE write_expression                { $$ = add_print_node($2); };
 
-write_expression: expression BIN_OP expression { $$ = add_expression_node($1, add_operation_node($2), $3, 3); };
+write_expression: expression BIN_OP expression { $$ = add_expression_node($1, add_operation_node($2), $3); };
 
-expression: '(' expression ')'              { $$ = add_expression_node(add_operation_node("("), $2, add_operation_node(")"), 3); }
-    | UNI_OP expression                     { $$ = add_expression_node(add_operation_node($1), $2, NULL, 2); }
-    | expression BIN_OP expression          { $$ = add_expression_node($1, add_operation_node($2), $3, 3); }
-    | NUMBER                                { $$ = add_expression_node(add_number_node($1), NULL, NULL, 1); }
-    | SYMBOL_NAME                           { $$ = add_expression_node(add_variable_reference($1), NULL, NULL, 1); };
+expression: '(' expression ')'              { $$ = add_expression_node(add_operation_node("("), $2, add_operation_node(")")); }
+    | UNI_OP expression                     { $$ = add_expression_node(add_operation_node($1), $2, NULL); }
+    | expression BIN_OP expression          { $$ = add_expression_node($1, add_operation_node($2), $3); }
+    | NUMBER                                { $$ = add_expression_node(add_number_node($1), NULL, NULL); }
+    | SYMBOL_NAME                           { $$ = add_expression_node(add_variable_reference($1), NULL, NULL); };
 
 %%
