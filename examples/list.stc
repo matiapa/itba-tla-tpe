@@ -1,10 +1,17 @@
 # WORKING
-write mean of [6,7,8,9]
+write mean of [1,2]
 
 # WORKING
-list l = [6,7,8,9]
-write mean of l
+list l1 = [2,3]
+write mean of l1
 
-# NOT WORKING (Fix Iña)
-# number n = mean of [6,7,8,9]
-# write n
+# WORKING
+list l2 = [3,4]
+number n1 = mean of l2
+
+# NOT WORKING (No imprime)
+write n1
+
+# NOT WORKING (No valida)
+# list l3 = "text"
+# number n2 = mean of n1

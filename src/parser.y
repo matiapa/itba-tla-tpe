@@ -88,10 +88,11 @@ if_end: END { $$ = NULL; }
     | ELSE block END { $$ = add_block_node($2); };
     
 full_declare: declare               { $$ = $1; }
-    | declare ASSIGN value          { $$ = add_value_variable($1, $3); };
+    | declare ASSIGN value          { $$ = add_value_variable($1, $3); }
+    | LIST_TYPE SYMBOL_NAME ASSIGN value { $$ = add_value_variable(declare_variable_node($2, $1), $4); };
 
-declare: type SYMBOL_NAME       { $$ = declare_variable_node($2, $1); };
-type: NUMBER_TYPE | TEXT_TYPE | BOOLEAN_TYPE | LIST_TYPE;
+declare: type SYMBOL_NAME           { $$ = declare_variable_node($2, $1); };
+type: NUMBER_TYPE | TEXT_TYPE | BOOLEAN_TYPE ;
 
 assign: SYMBOL_NAME ASSIGN value { $$ = assign_variable_node($1, $3); };
 value: expression   { $$ = $1; }

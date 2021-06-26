@@ -20,10 +20,6 @@ void free_instruction_node(node_t * node);
 
 
 void free_tree(node_list * program) {
-    
-    #ifdef YYDEBUG
-    printf("Empezando con el translate de código\n");
-    #endif
 
     if (program == NULL)
         return;

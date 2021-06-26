@@ -57,12 +57,9 @@ int main(int argc, char ** argv) {
 }
 
 void yyerror(node_list ** param, char *s){
-    extern char* yytext;
-
-    printf("%s: line: %d - '%s' \n\n", s, yylineno, yytext);
+    printf("%s at line %d\n", s, yylineno);
 
     free_tree(program);
 
     exit(1);
-
 }

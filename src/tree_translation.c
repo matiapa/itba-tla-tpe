@@ -231,9 +231,7 @@ void print_function_call(node_t * node) {
         free(str);
     } else if (fcall->input_list->type == VARIABLE_NODE) {
         variable_node * symbol = (variable_node *) fcall->input_list;
-        if (symbol->var_type != LIST_TYPE)
-            printf("Invalid type");
-        P("%s(%s, sizeof(%s))", fcall->function_name, symbol->name, symbol->name);
+        P("%s(%s, sizeof(%s)/sizeof(double))", fcall->function_name, symbol->name, symbol->name);
         free(symbol->name);
     }
     free(fcall->input_list);
