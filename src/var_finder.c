@@ -72,7 +72,7 @@ var_node * check_and_set_variables_rec(node_t * node,var_node * var_list){
                     }
                     var_list=add_to_list(var_list,create_var_node(variable_node_var->type,variable_node_var->name));
                 }
-                if (variable_node_var->declared==FALSE && variable_node_var->value!=NULL){ //caso donde se define la var
+                if (variable_node_var->declared==FALSE && variable_node_var->value!=NULL){ //caso donde no se define la var pero se asigna
                     int type =check_if_exists(var_list,variable_node_var->name);
                         if (type==-1)
                         {
@@ -90,24 +90,43 @@ var_node * check_and_set_variables_rec(node_t * node,var_node * var_list){
                         printf("Var %s not declared yet \n",variable_node_var->name);
                         error=-1;
                     }
+                    variable_node_var->type=type;
                 }
                 
                 break;
             case PRINT_NODE:
                 ;
                 print_node * print_node_var = (print_node *) node;
-                switch (print_node_var->content->type)
-                {
-                case VARIABLE_NODE:
-                    check_and_set_variables_rec((node_t *) print_node_var->content,var_list);   
-                    break;
+                switch (print_node_var->content->type){
+                    case VARIABLE_NODE:
+                        check_and_set_variables_rec((node_t *) print_node_var->content,var_list);   
+                        break;          
+            
+                    case EXPRESSION_NODE:
+                     //TODO implement esto
+                        break;
                 
-                default:
-                    #ifdef YYDEBUG
-                    printf("Algo salio mal var checker print_node\n");
-                    #endif
-                    break;
+                    case TEXT_NODE:
+                    //TODO implement esto
+                        break;
+                    
+                    default:
+                        #ifdef YYDEBUG
+                        printf("Algo salio mal var checker print_node\n");
+                        #endif
+                        break;
                 }
+                break;
+            case IF_NODE:
+                //TODO implement condition
+                ;
+                if_node* if_node_var=(if_node *)node;
+                var_list->references++;
+                check_and_set_variables_internal( (node_list *)((block_node *)if_node_var->then)->node_list,var_list);
+                free_list(var_list);
+                var_list->references++;
+                check_and_set_variables_internal((node_list *)((block_node *)if_node_var->otherwise)->node_list,var_list);
+                free_list(var_list);
                 break;
             default:
                 #ifdef YYDEBUG
