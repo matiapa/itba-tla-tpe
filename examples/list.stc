@@ -1,2 +1,10 @@
-number n1 = mean of {1,2,3}
-write mean of {6,7,8,9}
+# WORKING
+# write mean of [6,7,8,9]
+
+# NOT WORKING (Invalid type)
+list l = [6,7,8,9]
+write mean of l
+
+# NOT WORKING (Fix Iña)
+# number n = mean of [6,7,8,9]
+# write n

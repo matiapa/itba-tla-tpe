@@ -1,5 +1,4 @@
 number hola = 2 * 8
-if hola > 2 do
+if $hola > 2 do
 write "hola"
 end
-num chau = 5
