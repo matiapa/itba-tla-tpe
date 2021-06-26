@@ -24,4 +24,4 @@ int gcd(double * list, int size);
 
 int mcm(double * list, int size);
 
-void print_array(double * list_var, int size);
+double print_array(double * list_var, int size);

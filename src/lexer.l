@@ -1,6 +1,5 @@
 %{
 #include "include/tree.h"
-#include "include/functions.h"
 #include "y.tab.h"
 #include <stdio.h>
 int fileno(FILE * stream);
@@ -18,8 +17,10 @@ boolean    { yylval.number = BOOLEAN_TYPE; return BOOLEAN_TYPE; }
 list       { yylval.number = LIST_TYPE; return LIST_TYPE; }
 write      { return WRITE; }
 
-(mean|median|mode|stdev|range|qtr1|qtr3|inter-qtr|perc-n|gcd|mcm)[ ]of {
-    strcpy(yylval.string, str_to_fun(yytext)); return FUNCTION_CALL;
+(mean|median|mode|stdev|range|qtr1|qtr3|inter_qtr)[ ]of {
+    int i; for(i=0; yytext[i]!=' '; i++);
+    memcpy(yylval.string, yytext, i); yylval.string[i]=0;
+    return FUNCTION_CALL;
 }
 
 \"[^\"]+\"                  { strcpy(yylval.string, yytext); return TEXT; }

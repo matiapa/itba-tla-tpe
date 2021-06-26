@@ -145,7 +145,7 @@ void print_print(node_t * node) {
         case ARRAY_NODE:
             ;
             array_node * array = (array_node *)print->content;
-            P("printf(\"%%s\\n\", %s);\n", array->array);
+            P("str_caller(\"%s\", %s);\n", array->array, "print_array");
             free(array->array);
         default:
             break;

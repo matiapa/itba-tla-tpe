@@ -1,6 +1,23 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdbool.h>
+#include <math.h>
+
+void sort(double * arr, int size) {
+    for (int i = 0; i < size - 1; i++) {
+        bool swapped = false;
+        for (int j = 0; j < size - 1 - i; j++) {
+            if (arr[j] > arr[j + 1]) {
+                double temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+                swapped = true;
+            }
+        }
+        if (!swapped) break;
+    }
+}
 
 double str_caller(char * str, double (*fun)(double *, int)) {
     double * list = malloc(sizeof(double));
@@ -19,35 +36,73 @@ double str_caller(char * str, double (*fun)(double *, int)) {
 
 double mean(double * list, int size) {
     double sum = 0;
-    for(int i=0; i<size; i++)
+    for (int i = 0; i < size; i++)
         sum += list[i];
     return sum / size;
 }
 
-double median(double * list, int size) { }
+double mode(double * list, int size) {
+    sort(list, size);
+    double mode = 0;
+    int occurrences = 0, last_occurrences = 0;
+    for (int i = 0; i < size-1; i++) {
+        occurrences += 1;
+        if (list[i] != list[i+1]) {
+            mode = occurrences > last_occurrences ? list[i] : mode;
+            last_occurrences = occurrences;
+            occurrences = 0;
+        }
+    }
+    return mode;
+}
 
-double mode(double * list, int size) { }
+double stdev(double * list, int size) {
+    if (size < 2) return 0.0;
+    double sum = 0, _mean = mean(list, size);
+    for (int i = 0; i < size; i++)
+        sum += pow(list[i] - _mean, 2);
+    return sqrt(sum / (size - 1));
+}
 
-double stdev(double * list, int size) { }
+double range(double * list, int size) {
+    int min = list[0], max = min;
+    for (int i = 0; i < size; i++) {
+        min = list[i] < min ? list[i] : min;
+        max = list[i] > max ? list[i] : max;
+    }
+    return max - min;
+}
 
-double range(double * list, int size) { }
 
-double qtr1(double * list, int size) { }
+double perc_n(double * list, int size, int n) {
+    sort(list, size);
+    int f = (int) floor(size * n / 100.0);
+    int c = (int) ceil(size * n / 100.0);
+    double v = f == c ? list[f-1] : (list[f-1] + list[c-1]) / 2;
+    return v;
+}
 
-double qtr3(double * list, int size) { }
+double median(double * list, int size) {
+    return perc_n(list, size, 50);
+}
 
-double inter_qtr(double * list, int size) { }
+double qtr1(double * list, int size) {
+    return perc_n(list, size, 25);
+}
 
-double perc_n(double * list, int size) { }
+double qtr3(double * list, int size) {
+    return perc_n(list, size, 75);
+}
 
-double gcd(double * list, int size) { }
+double inter_qtr(double * list, int size) {
+    return qtr3(list, size) - qtr1(list, size);
+}
 
-double mcm(double * list, int size) { }
-
-void print_array(double * list_var, int size) { 
+double print_array(double * list_var, int size) { 
     printf("[");
     for (int i = 0; i < size; i++) {
         printf(" %lf ", list_var[i]);
     }
-    printf("]");
+    printf("]\n");
+    return 0;
 }
