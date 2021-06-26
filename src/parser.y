@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "include/tree.h"
+#include "include/free_tree.h"
 
 
 // Extern prototypes
@@ -72,9 +73,9 @@ program: instruction program { $$ = (*program = (node_list *)add_element_to_list
 
 instruction: full_declare { $$ = add_instruction_node($1); }
     | assign    { $$ = add_instruction_node($1); }
-    | write     { $$ = main_init==FALSE ? NULL :add_instruction_node($1); }
-    | if        { $$ = main_init==FALSE ? NULL :add_instruction_node($1); }
-    | while     { $$ = main_init==FALSE ? NULL : add_instruction_node($1); }
+    | write     { $$ = main_init == FALSE ? free_write($1) : add_instruction_node($1); }
+    | if        { $$ = main_init == FALSE ? free_if_node($1) : add_instruction_node($1); }
+    | while     { $$ = main_init == FALSE ? free_while_node($1) : add_instruction_node($1); }
     | START     { main_init=TRUE; $$=NULL; };
 
 block: instruction block { $$ = (node_list *)add_element_to_list($2, $1); }

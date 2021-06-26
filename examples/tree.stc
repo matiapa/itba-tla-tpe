@@ -1,3 +1,4 @@
+
 number n1 = 2.5 * 4
 number n2 = $n1 >= 4
 write n1
