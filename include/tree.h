@@ -52,6 +52,9 @@ typedef struct expression_node {
     node_t * third;
     int cant;
 } expression_node;
+// los nodos de expression pueden ser 
+// TEXT_NODE, VARIABLE_NODE, NUMBER_NODE
+// o EXPRESSION_NODE
 
 typedef struct instruction_node {
     node_type type;
