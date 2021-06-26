@@ -1,0 +1,10 @@
+number f = 0
+number t = 1
+if 1 do
+    if f do
+        write "A"
+    end
+    if t do
+        write "B"
+    end
+end
