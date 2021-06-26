@@ -19,7 +19,7 @@ void print_expression(node_t * node);
 void read_instruction_list(node_list * list);
 void print_if_node(node_t * node);
 void print_while_node(node_t * node);
-void print_function_call(node_t * node);
+void print_list_op(node_t * node);
 void free_text_node(node_t * node);
 void free_number_node(node_t * node);
 void free_operation_node(node_t * node);
@@ -203,8 +203,8 @@ void switch_print_expression(node_t * node) {
             P(" %s ", ((operation_node *)node)->operation);
             free(((operation_node *)node)->operation);
             break;
-        case FUNCTION_CALL_NODE:
-            print_function_call(node);
+        case LIST_OP_NODE:
+            print_list_op(node);
             break;
         default:
             break;
@@ -258,18 +258,18 @@ void print_while_node(node_t * node) {
     P("}\n");
 }
 
-void print_function_call(node_t * node) {
-    function_call_node * fcall = (function_call_node *)node;
+void print_list_op(node_t * node) {
+    list_op_node * lop = (list_op_node *)node;
 
-    if (fcall->input_list->type == ARRAY_NODE) {
-        char * str = ((array_node *) fcall->input_list)->array;
-        P("str_caller(\"%s\", %s)", str, fcall->function_name);
+    if (lop->input_list->type == ARRAY_NODE) {
+        char * str = ((array_node *) lop->input_list)->array;
+        P("str_caller(\"%s\", %s)", str, lop->operator);
         free(str);
-    } else if (fcall->input_list->type == VARIABLE_NODE) {
-        variable_node * symbol = (variable_node *) fcall->input_list;
-        P("%s(%s, sizeof(%s)/sizeof(double))", fcall->function_name, symbol->name, symbol->name);
+    } else if (lop->input_list->type == VARIABLE_NODE) {
+        variable_node * symbol = (variable_node *) lop->input_list;
+        P("%s(%s, sizeof(%s)/sizeof(double))", lop->operator, symbol->name, symbol->name);
         free(symbol->name);
     }
-    free(fcall->input_list);
-    free(fcall->function_name);
+    free(lop->input_list);
+    free(lop->operator);
 }

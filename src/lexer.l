@@ -21,7 +21,7 @@ read       { return READ; }
 (mean|median|mode|stdev|range|qtr1|qtr3|inter_qtr)[ ]of {
     int i; for(i=0; yytext[i]!=' '; i++);
     memcpy(yylval.string, yytext, i); yylval.string[i]=0;
-    return FUNCTION_CALL;
+    return LIST_OP;
 }
 
 \"[^\"]+\"                  { strcpy(yylval.string, yytext); return TEXT; }

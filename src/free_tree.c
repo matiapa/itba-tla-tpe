@@ -183,8 +183,8 @@ void * switch_free_expression(node_t * node) {
         case OPERATION_NODE:
             free_operation_node(node);
             break;
-        case FUNCTION_CALL_NODE:
-            free_function_call(node);
+        case LIST_OP_NODE:
+            free_list_op(node);
             break;
         default:
             break;
@@ -235,15 +235,15 @@ void * free_while_node(node_t * node) {
     return NULL;
 }
 
-void * free_function_call(node_t * node) {
-    function_call_node * fcall = (function_call_node *)node;
+void * free_list_op(node_t * node) {
+    list_op_node * lop = (list_op_node *)node;
 
-    if (fcall->input_list->type == ARRAY_NODE) {
-        free_array_node(fcall->input_list);
-    } else if (fcall->input_list->type == VARIABLE_NODE) {
-        free_variable(fcall->input_list);
+    if (lop->input_list->type == ARRAY_NODE) {
+        free_array_node(lop->input_list);
+    } else if (lop->input_list->type == VARIABLE_NODE) {
+        free_variable(lop->input_list);
     }
-    free(fcall->input_list);
-    free(fcall->function_name);
+    free(lop->input_list);
+    free(lop->operator);
     return NULL;
 }
