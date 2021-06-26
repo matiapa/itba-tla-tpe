@@ -43,3 +43,11 @@ double perc_n(double * list, int size) { }
 double gcd(double * list, int size) { }
 
 double mcm(double * list, int size) { }
+
+void print_array(double * list_var, int size) { 
+    printf("[");
+    for (int i = 0; i < size; i++) {
+        printf(" %lf ", list_var[i]);
+    }
+    printf("]");
+}
