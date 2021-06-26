@@ -50,7 +50,7 @@ int main(int argc, char ** argv) {
     fprintf(out, "\n}");
     fclose(out);
 
-    system("gcc src/functions.c temp.c -o program");
+    system("gcc src/functions.c temp.c -lm -o program");
 
     printf("\nSuccesfully parsed\n");
 
