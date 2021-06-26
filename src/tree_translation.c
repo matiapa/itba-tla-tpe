@@ -226,10 +226,13 @@ void print_function_call(node_t * node) {
     if (fcall->input_list->type == ARRAY_NODE) {
         char * str = ((array_node *) fcall->input_list)->array;
         P("str_caller(\"%s\", %s)", str, fcall->function_name);
-    } else {
+        free(str);
+    } else if (fcall->input_list->type == VARIABLE_NODE) {
         variable_node * symbol = (variable_node *) fcall->input_list;
         if (symbol->type != LIST_TYPE)
             yyerror(NULL, "Invalid type");
         P("%s(%s)", fcall->function_name, symbol->name);
+        free(symbol->name);
     }
+    free(fcall->function_name);
 }

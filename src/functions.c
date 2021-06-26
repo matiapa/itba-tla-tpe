@@ -5,7 +5,7 @@
 double str_caller(char * str, double (*fun)(double *, int)) {
     double * list = malloc(sizeof(double));
     int s=1, p=1;
-    for(int c=1; str[c] != '}'; c++){
+    for(int c=1; str[c] != ']'; c++){
         if(str[c] != ',') continue;
         list = realloc(list, sizeof(double) * (s+1));
         sscanf(str + p, "%lf", list + s - 1);

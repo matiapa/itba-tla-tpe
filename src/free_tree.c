@@ -18,6 +18,7 @@ void free_number_node(node_t * node);
 void free_operation_node(node_t * node);
 void free_instruction_node(node_t * node);
 
+
 void free_tree(node_list * program) {
     
     #ifdef YYDEBUG

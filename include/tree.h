@@ -4,25 +4,20 @@
 #define TRUE 1
 #define FALSE 0
 
-enum { EXPRESSION };
-
 typedef enum {
   TEXT_NODE = 0,
   NUMBER_NODE,
-  VARIABLE_NODE,
+  ARRAY_NODE,
   OPERATION_NODE,
-  CONDITIONAL_NODE,
-  BLOCK_NODE,
-  EMPTY_NODE,
+  VARIABLE_NODE,
+  PRINT_NODE,
   IF_NODE,
   WHILE_NODE,
-  RETURN_NODE,
+  BLOCK_NODE,
   LIST_NODE,
   INSTRUCTION_NODE,
   NEGATION_NODE,
-  PRINT_NODE,
   EXPRESSION_NODE,
-  ARRAY_NODE,
   FUNCTION_CALL_NODE
 } node_type;
 
@@ -32,8 +27,8 @@ typedef struct node_s {
 
 typedef struct node_list{
   node_type type;
-  node_t * node;
-  struct node_list *next;
+  node_t * node; // INSTRUCTION_NODE
+  struct node_list * next; // LIST_NODE
 } node_list;
 
 typedef struct variable_node {
@@ -41,53 +36,50 @@ typedef struct variable_node {
     int declared;
     int var_type;
     char * name;
-    node_t * value;
+    node_t * value; // EXPRESSION_NODE TEXT_NODE NUMBER_NODE ARRAY_NODE
 } variable_node;
 
 // los nodos de expression pueden ser 
-// TEXT_NODE, VARIABLE_NODE, NUMBER_NODE
+// TEXT_NODE, VARIABLE_NODE, NUMBER_NODE, EXPRESSION_NODE
 typedef struct expression_node {
     node_type type;
-    node_t * first;
-    node_t * second;
-    node_t * third;
+    node_t * first; // EXPRESSION_NODE NUMBER_NODE VARIABLE_NODE OPERATION_NODE
+    node_t * second; // EXPRESSION_NODE NUMBER_NODE VARIABLE_NODE OPERATION_NODE
+    node_t * third; // EXPRESSION_NODE NUMBER_NODE VARIABLE_NODE OPERATION_NODE
 } expression_node;
-// los nodos de expression pueden ser 
-// TEXT_NODE, VARIABLE_NODE, NUMBER_NODE
-// o EXPRESSION_NODE
 
 typedef struct instruction_node {
     node_type type;
-    node_t * instruction;
+    node_t * instruction; // INSTRUCTION_NODE
 } instruction_node;
 
 typedef struct function_call_node {
     node_type type;
     char * function_name;
-    node_t * input_list;    // array_node or symbol
+    node_t * input_list;    // ARRAY_NODE or VARIABLE_NODE
 } function_call_node;
 
 typedef struct block_node {
     node_type type;
-    node_t * node_list;
+    node_t * node_list; // LIST_NODE
 } block_node;
 
 typedef struct if_node {
     node_type type;
-    node_t * condition; // esto es un expression_node
-    node_t * then; // esto es un block_node
-    node_t * otherwise; // esto es un block_node
+    node_t * condition; // EXPRESSION_NODE
+    node_t * then; // BLOCK_NODE
+    node_t * otherwise; // BLOCK_NODE
 } if_node;
 
 typedef struct while_node {
     node_type type;
-    node_t * condition; // esto es un expression_node
-    node_t * then; // esto es un block_node
+    node_t * condition; // EXPRESSION_NODE
+    node_t * then; // BLOCK_NODE
 } while_node;
 
 typedef struct print_node {
     node_type type;
-    node_t * content; // esto puede ser una variable_node o algo de tipo expression_node
+    node_t * content; // EXPRESSION_NODE o VARIABLE_NODE
 } print_node;
 
 typedef struct text_node {

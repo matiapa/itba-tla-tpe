@@ -22,7 +22,7 @@ write      { return WRITE; }
 
 \"[^\"]+\"                  { strcpy(yylval.string, yytext); return TEXT; }
 [-]?[0-9]+(\.[0-9]+)?       { strcpy(yylval.string, yytext); return NUMBER; }
-\{[ \t]*[0-9]([ \t]*,[ \t]*[0-9])*[ \t]*\}  { strcpy(yylval.string, yytext); return LIST; }
+\[[ \t]*[0-9]([ \t]*,[ \t]*[0-9])*[ \t]*\]  { strcpy(yylval.string, yytext); return LIST; }
 
 =                           { return ASSIGN;     }
 
