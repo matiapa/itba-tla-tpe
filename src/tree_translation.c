@@ -9,12 +9,16 @@
 FILE * out;
 
 /*-------------------- FUNCIONES ---------------------*/
+
+void yyerror(node_list ** program, char *s);
+
 void print_print(node_t * node);
 void print_var(node_t * node);
 void print_expression(node_t * node);
 void read_instruction_list(node_list * list);
 void print_if_node(node_t * node);
 void print_while_node(node_t * node);
+void print_function_call(node_t * node);
 
 void read_tree(node_list * program, FILE * file) {
     
@@ -44,10 +48,13 @@ void read_instruction_list(node_list * list) {
             case WHILE_NODE:
                 print_while_node(nodo->instruction);
                 break;
+            case FUNCTION_CALL_NODE:
+                print_function_call(nodo->instruction);
+                break;
             default:
                 #ifdef YYDEBUG
                 printf("Algo salio mal\n");
-                #endif                
+                #endif
                 break;
         }
         free(nodo->instruction);
@@ -59,40 +66,45 @@ void read_instruction_list(node_list * list) {
 
 void print_var(node_t * node) {
     variable_node * var = (variable_node *) node;
-    expression_node * exp = (expression_node *)(var->value);
 
     if (var->declared == TRUE) {
         switch(var->var_type) {
             case NUMBER_TYPE:
-                P("double ");
+                P("double %s", var->name);
                 break;
             case TEXT_TYPE:
-                P("char * ");
+                P("char * %s", var->name);
                 break;
-            case ARRAY_TYPE:
-                P("double * ");
+            case LIST_TYPE:
+                if (var->value == NULL || var->value->type == VARIABLE_NODE) {
+                    P("double * %s", var->name);
+                } else {
+                    P("double %s[]", var->name);
+                }
                 break;
             case BOOLEAN_TYPE:
-                P("char ");
+                P("char %s", var->name);
                 break;
             default:
                 break;
         }
     }
-    
-    P("%s", var->name);
     free(var->name);
-    if (exp != NULL) {
+
+    if (var->value != NULL) {
         P(" = ");
         if (var->value->type == EXPRESSION_NODE) {
             print_expression(var->value);
         } else if (var->value->type == TEXT_NODE) {
-            text_node * text = (text_node *)var->value;
+            text_node * text = (text_node *) var->value;
             P("%s", text->text);
-            free(text);
+        } else if (var->value->type == ARRAY_NODE) {
+            array_node * array = (array_node *) var->value;
+            P("%s", array->array);
         }
+        free(var->value);
     }
-    free(exp);
+
     P(";\n");
 }
 
@@ -112,9 +124,9 @@ void print_print(node_t * node) {
             free(var->name);
             break;
         case EXPRESSION_NODE:
-            P("printf(\"%%f\\n\", (double) ");
+            P("printf(\"%%f\\n\", (double) (");
             print_expression(print->content);
-            P(");\n");
+            P("));\n");
             break;
         case TEXT_NODE:
             ;
@@ -200,4 +212,18 @@ void print_while_node(node_t * node) {
     read_instruction_list((node_list *)block->node_list);
     free(block);
     P("}\n");
+}
+
+void print_function_call(node_t * node) {
+    function_call_node * fcall = (function_call_node *)node;
+
+    if (fcall->input_list->type == ARRAY_NODE) {
+        char * str = ((array_node *) fcall->input_list)->array;
+        P("str_caller(%s,%s)", str, fcall->function_name);
+    } else {
+        variable_node * symbol = (variable_node *) fcall->input_list;
+        if (symbol->type != LIST_TYPE)
+            yyerror(NULL, "Invalid type");
+        P("%s(%s)", fcall->function_name, symbol->name);
+    }
 }

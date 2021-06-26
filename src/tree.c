@@ -3,6 +3,17 @@
 #include <stdlib.h>
 #include <string.h>
 
+node_t * add_function_call(char * function_name, node_t * input_list) {
+    function_call_node * node = malloc(sizeof(function_call_node));
+
+    node->type = FUNCTION_CALL_NODE;
+    node->function_name = malloc(strlen(function_name));
+    node->input_list = input_list;
+    strcpy(node->function_name, function_name);
+
+    return (node_t *) node;
+}
+
 node_t * add_expression_node(node_t * first, node_t * second, node_t * third) {
     expression_node * expression = calloc(1, sizeof(expression_node));
     expression->type = EXPRESSION_NODE;

@@ -46,15 +46,17 @@ int recursion = 0;
 %token ASSIGN
 %token <string> IF WHILE DO END ELSE
 %token EOL FIN
-%token <number> TEXT_TYPE NUMBER_TYPE BOOLEAN_TYPE ARRAY_TYPE
+%token <number> TEXT_TYPE NUMBER_TYPE BOOLEAN_TYPE LIST_TYPE
 %token WRITE
 
 %token <string> SYMBOL_NAME
 %token <string> BIN_OP UNI_OP
-%token <string> NUMBER TEXT BOOLEAN ARRAY
+%token <string> NUMBER TEXT BOOLEAN LIST
+%token <string> FUNCTION_CALL
 
 %type <number> type
-%type <node> declare full_declare value assign instruction write expression write_expression if if_end while
+%type <node> full_declare declare assign value expression 
+%type <node> instruction write function_call if if_end while
 %type <list> program block
 
 %left BIN_OP
@@ -70,6 +72,7 @@ program: instruction program { $$ = (*program = (node_list *)add_element_to_list
 instruction: full_declare { $$ = add_instruction_node($1); }
     | assign { $$ = add_instruction_node($1); }
     | write { $$ = add_instruction_node($1); }
+    | function_call  { $$ = add_instruction_node($1); }
     | if { $$ = add_instruction_node($1); }
     | while { $$ = add_instruction_node($1); };
 
@@ -85,28 +88,30 @@ while: WHILE expression DO block END { $$ = add_while_node($2, add_block_node($4
 if_end: END { $$ = NULL; }
     | ELSE block END { $$ = add_block_node($2); };
     
-full_declare: declare '=' value { $$ = add_value_variable($1, $3); }
-    | declare { $$ = $1; };
+full_declare: declare               { $$ = $1; }
+    | declare ASSIGN value          { $$ = add_value_variable($1, $3); };
 
-declare: type SYMBOL_NAME { $$ = declare_variable_node($2, $1); };
+declare: type SYMBOL_NAME       { $$ = declare_variable_node($2, $1); };
+type: NUMBER_TYPE | TEXT_TYPE | BOOLEAN_TYPE | LIST_TYPE;
 
-type: NUMBER_TYPE | TEXT_TYPE | BOOLEAN_TYPE | ARRAY_TYPE;
+assign: SYMBOL_NAME ASSIGN value { $$ = assign_variable_node($1, $3); };
+value: expression   { $$ = $1; }
+    | SYMBOL_NAME   { $$ = add_variable_reference($1); }
+    | TEXT          { $$ = add_text_node($1); }
+    | LIST          { $$ = add_list_node($1); };
 
-assign: SYMBOL_NAME '=' value { $$ = assign_variable_node($1, $3); };
+function_call: FUNCTION_CALL LIST           { $$ = add_function_call($1, add_list_node($2)); }
+    | FUNCTION_CALL SYMBOL_NAME             { $$ = add_function_call($1, add_variable_reference($2)); };
 
-value: expression { $$ = $1; } 
-    | TEXT { $$ = add_text_node($1); } ;  
-
-write: WRITE TEXT                           { $$ = add_print_node(add_text_node($2)); }
-    | WRITE SYMBOL_NAME                     { $$ = add_print_node(add_variable_reference($2)); } 
-    | WRITE write_expression                { $$ = add_print_node($2); };
-
-write_expression: expression BIN_OP expression { $$ = add_expression_node($1, add_operation_node($2), $3); };
+write: WRITE expression                     { $$ = add_print_node($2); }
+    | WRITE SYMBOL_NAME                     { $$ = add_print_node(add_variable_reference($2)); }
+    | WRITE TEXT                            { $$ = add_print_node(add_text_node($2)); }
+    | WRITE LIST                            { $$ = add_print_node(add_list_node($2)); };
 
 expression: '(' expression ')'              { $$ = add_expression_node(add_operation_node("("), $2, add_operation_node(")")); }
     | UNI_OP expression                     { $$ = add_expression_node(add_operation_node($1), $2, NULL); }
     | expression BIN_OP expression          { $$ = add_expression_node($1, add_operation_node($2), $3); }
+    | function_call                         { $$ = add_expression_node($1, NULL, NULL); }
     | NUMBER                                { $$ = add_expression_node(add_number_node($1), NULL, NULL); }
-    | SYMBOL_NAME                           { $$ = add_expression_node(add_variable_reference($1), NULL, NULL); };
-
+    | '$' SYMBOL_NAME                       { $$ = add_expression_node(add_variable_reference($2), NULL, NULL); };
 %%

@@ -22,7 +22,8 @@ typedef enum {
   NEGATION_NODE,
   PRINT_NODE,
   EXPRESSION_NODE,
-  ARRAY_NODE
+  ARRAY_NODE,
+  FUNCTION_CALL_NODE
 } node_type;
 
 typedef struct node_s {
@@ -60,6 +61,11 @@ typedef struct instruction_node {
     node_t * instruction;
 } instruction_node;
 
+typedef struct function_call_node {
+    node_type type;
+    char * function_name;
+    node_t * input_list;    // array_node or symbol
+} function_call_node;
 
 typedef struct block_node {
     node_type type;
@@ -123,6 +129,8 @@ node_t * add_if_node(node_t * condition, node_t * then, node_t * otherwise);
 node_t * add_while_node(node_t * condition, node_t * block);
 
 node_t * add_operation_node(char * operation);
+
+node_t * add_function_call(char * function_name, node_t * input);
 
 #endif
 

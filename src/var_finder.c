@@ -128,6 +128,12 @@ void check_var_types_in_value(variable_node* variable_node_var,var_node * var_li
                 error=-1;
             }
             break;
+        case ARRAY_NODE:
+            if (variable_node_var->var_type!=LIST_TYPE){
+                printf("Var %s is of type list and assigned not list\n",variable_node_var->name);
+                error=-1;
+            }
+            break;
         case EXPRESSION_NODE:
             if (!check_var_type_in_expression(NUMBER_TYPE,(expression_node*)variable_node_var->value,var_list)){
                 printf("Var %s is of type number and assigned not number\n",variable_node_var->name);
