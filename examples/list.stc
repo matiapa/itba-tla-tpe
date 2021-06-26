@@ -1,7 +1,7 @@
 # WORKING
-# write mean of [6,7,8,9]
+write mean of [6,7,8,9]
 
-# NOT WORKING (Invalid type)
+# WORKING
 list l = [6,7,8,9]
 write mean of l
 

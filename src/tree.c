@@ -7,7 +7,7 @@ node_t * add_function_call(char * function_name, node_t * input_list) {
     function_call_node * node = malloc(sizeof(function_call_node));
 
     node->type = FUNCTION_CALL_NODE;
-    node->function_name = malloc(strlen(function_name));
+    node->function_name = malloc(strlen(function_name) + 1);
     node->input_list = input_list;
     strcpy(node->function_name, function_name);
 
@@ -224,7 +224,7 @@ node_t * add_number_node(char * number) {
     return (node_t *)node;
 }
 
-node_t * add_list_node(char * array) {
+node_t * add_array_node(char * array) {
     array_node * node = (array_node *)malloc(sizeof(array_node));
     if (node == NULL) {
         printf("Hubo un error en el maloc");

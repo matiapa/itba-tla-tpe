@@ -114,7 +114,7 @@ node_t * add_element_to_list(node_list * list, node_t * element);
 
 node_t * add_print_node(node_t * content);
 node_t * add_text_node(char * text);
-node_t * add_list_node(char * array);
+node_t * add_array_node(char * array);
 node_t * add_number_node(char * number);
 node_t * add_block_node(node_list * list);
 node_t * add_if_node(node_t * condition, node_t * then, node_t * otherwise);

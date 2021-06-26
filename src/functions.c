@@ -24,22 +24,22 @@ double mean(double * list, int size) {
     return sum / size;
 }
 
-double median(double * list) { }
+double median(double * list, int size) { }
 
-double mode(double * list) { }
+double mode(double * list, int size) { }
 
-double stdev(double * list) { }
+double stdev(double * list, int size) { }
 
-double range(double * list) { }
+double range(double * list, int size) { }
 
-double qtr1(double * list) { }
+double qtr1(double * list, int size) { }
 
-double qtr3(double * list) { }
+double qtr3(double * list, int size) { }
 
-double inter_qtr(double * list) { }
+double inter_qtr(double * list, int size) { }
 
-double perc_n(double * list) { }
+double perc_n(double * list, int size) { }
 
-double gcd(double * list) { }
+double gcd(double * list, int size) { }
 
-double mcm(double * list) { }
+double mcm(double * list, int size) { }

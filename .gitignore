@@ -14,3 +14,4 @@ program
 .vscode/
 .idea/
 pvs.sh
+.gdb_history

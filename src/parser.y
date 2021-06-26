@@ -97,15 +97,15 @@ assign: SYMBOL_NAME ASSIGN value { $$ = assign_variable_node($1, $3); };
 value: expression   { $$ = $1; }
     | SYMBOL_NAME   { $$ = add_variable_reference($1); }
     | TEXT          { $$ = add_text_node($1); }
-    | LIST          { $$ = add_list_node($1); };
+    | LIST          { $$ = add_array_node($1); };
 
-function_call: FUNCTION_CALL LIST           { $$ = add_function_call($1, add_list_node($2)); }
+function_call: FUNCTION_CALL LIST           { $$ = add_function_call($1, add_array_node($2)); }
     | FUNCTION_CALL SYMBOL_NAME             { $$ = add_function_call($1, add_variable_reference($2)); };
 
 write: WRITE expression                     { $$ = add_print_node($2); }
     | WRITE SYMBOL_NAME                     { $$ = add_print_node(add_variable_reference($2)); }
     | WRITE TEXT                            { $$ = add_print_node(add_text_node($2)); }
-    | WRITE LIST                            { $$ = add_print_node(add_list_node($2)); };
+    | WRITE LIST                            { $$ = add_print_node(add_array_node($2)); };
 
 expression: '(' expression ')'              { $$ = add_expression_node(add_operation_node("("), $2, add_operation_node(")")); }
     | UNI_OP expression                     { $$ = add_expression_node(add_operation_node($1), $2, NULL); }

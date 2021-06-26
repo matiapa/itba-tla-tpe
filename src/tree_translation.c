@@ -105,7 +105,9 @@ void print_var(node_t * node) {
             P("%s", text->text);
         } else if (var->value->type == ARRAY_NODE) {
             array_node * array = (array_node *) var->value;
-            P("%s", array->array);
+            array->array[strlen(array->array)-1] = 0;
+            P("{%s}", array->array+1);
+            free(array->array);
         }
         free(var->value);
     }
@@ -229,10 +231,11 @@ void print_function_call(node_t * node) {
         free(str);
     } else if (fcall->input_list->type == VARIABLE_NODE) {
         variable_node * symbol = (variable_node *) fcall->input_list;
-        if (symbol->type != LIST_TYPE)
-            yyerror(NULL, "Invalid type");
-        P("%s(%s)", fcall->function_name, symbol->name);
+        if (symbol->var_type != LIST_TYPE)
+            printf("Invalid type");
+        P("%s(%s, sizeof(%s))", fcall->function_name, symbol->name, symbol->name);
         free(symbol->name);
     }
+    free(fcall->input_list);
     free(fcall->function_name);
 }
