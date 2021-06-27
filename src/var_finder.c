@@ -29,6 +29,7 @@ void check_var_types_in_value(variable_node* variable_node_var,var_node * var_li
 int check_var_type_in_expression(int type,expression_node * expr,var_node * var_list);
 int check_var_type_in_expression_rec(int type,node_t * node,var_node * var_list);
 int check_var_type_in_list_op(int type,list_op_node * node,var_node * var_list);
+int check_var_type_in_list_value(int type,list_op_node * node,var_node * var_list);
 
 int check_and_set_variables(node_list * tree){
     var_node varinit;
@@ -298,6 +299,40 @@ int check_var_type_in_expression_rec(int type,node_t * node,var_node * var_list)
 }
 
 int check_var_type_in_list_op(int type,list_op_node * node,var_node * var_list){
+    
+    if(strcmp("elem_at",node->operator)==0){
+        if (check_var_type_in_list_value(LIST_TYPE,node,var_list)==FALSE){
+            printf("List value is invalid \n");
+            error=-1;
+        }
+        if (check_var_type_in_expression(NUMBER_TYPE,(expression_node *)node->arg,var_list)==FALSE)
+        {
+            printf("index expression in list is invalid \n");
+            error=-1;
+        }
+        return TRUE;
+    }else if(strcmp("contains",node->operator)==0){ 
+        if (check_var_type_in_list_value(LIST_TYPE,node,var_list)==FALSE){
+            printf("List is invalid \n");
+            error=-1;
+        }
+        if (check_var_type_in_expression(NUMBER_TYPE,(expression_node *)node->arg,var_list)==FALSE)
+        {
+            printf("expression before IN list is invalid \n");
+            error=-1;
+        }
+        
+        return TRUE;
+    }else{
+        if (check_var_type_in_list_value(LIST_TYPE,node,var_list)==FALSE){
+            printf("List is invalid \n");
+            error=-1;
+        }
+        
+        return TRUE;
+    }
+}
+int check_var_type_in_list_value(int type,list_op_node * node,var_node * var_list){
     switch(node->list->type) {
         case VARIABLE_NODE:
             ;
