@@ -48,7 +48,7 @@ int reduced = 0;
 
 %token <string> IF WHILE DO END ELSE
 %token <string> SYMBOL_NAME
-%token <string> BIN_OP UNI_OP MEASURE_OF
+%token <string> BIN_OP UNI_OP MEASURE_OF POWER
 %token <string> NUMBER TEXT BOOLEAN LIST
 
 %token <number> TEXT_TYPE NUMBER_TYPE BOOLEAN_TYPE LIST_TYPE
@@ -60,6 +60,7 @@ int reduced = 0;
 %type <list> program block
 
 %left BIN_OP
+%left POWER
 %nonassoc UNI_OP
 
 %parse-param {node_list ** program}
@@ -112,6 +113,7 @@ read: READ SYMBOL_NAME                      { $$ = add_read_node(add_variable_re
 expression: '(' expression ')'              { $$ = add_expression_node(add_operation_node("("), $2, add_operation_node(")")); }
     | UNI_OP expression                     { $$ = add_expression_node(add_operation_node($1), $2, NULL); }
     | expression BIN_OP expression          { $$ = add_expression_node($1, add_operation_node($2), $3); }
+    | expression POWER expression           { $$ = add_expression_node($1, add_operation_node("^"), $3); }
     | list_operation                        { $$ = add_expression_node($1, NULL, NULL); }
     | NUMBER                                { $$ = add_expression_node(add_number_node($1), NULL, NULL); }
     | '$' SYMBOL_NAME                       { $$ = add_expression_node(add_variable_reference($2), NULL, NULL); };
@@ -119,6 +121,7 @@ expression: '(' expression ')'              { $$ = add_expression_node(add_opera
 list_operation: MEASURE_OF list_value       { $$ = add_list_operation($1, $2, 0); }
     | list_value '(' NUMBER ')'             { $$ = add_list_operation("elem_at", $1, atof($3)); }
     | NUMBER IN list_value                  { $$ = add_list_operation("contains", $3, atof($1)); };
+
 list_value: SYMBOL_NAME                     { $$ = add_variable_reference($1); }
     | LIST                                  { $$ = add_array_node($1); }
 

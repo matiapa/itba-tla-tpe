@@ -30,11 +30,14 @@ write      { return WRITE; }
 read       { return READ; }
 
 
-\"[^\"]+\"                  { strcpy(yylval.string, yytext); return TEXT; }
-{DECIMAL}                   { strcpy(yylval.string, yytext); return NUMBER; }
+\"[^\"]+\"                                          { strcpy(yylval.string, yytext); return TEXT; }
+e                                                   { strcpy(yylval.string, "2.73"); return NUMBER; }
+[E][ ]                                                   { strcpy(yylval.string, yytext); return BIN_OP; }
+{DECIMAL}                                           { strcpy(yylval.string, yytext); return NUMBER; }
 \[[ \t]*{DECIMAL}([ \t]*,[ \t]*{DECIMAL})*[ \t]*\]  { strcpy(yylval.string, yytext); return LIST; }
 =                           { return ASSIGN;     }
 
+\^                          { strcpy(yylval.string, "^"); return POWER; }
 [-+\*/%<>]|<=|>=            { strcpy(yylval.string, yytext); return BIN_OP; }
 neq		                    { strcpy(yylval.string, "!="); return BIN_OP; }
 eq		                    { strcpy(yylval.string, "=="); return BIN_OP; }

@@ -39,6 +39,10 @@ int main(int argc, char ** argv) {
     fprintf(out, "int main() {\n");
 
     yyparse(&program);
+    if (program->node == NULL) {
+        free(program);
+        program = NULL;
+    }
     if (check_and_set_variables(program)==-1) {
         printf("failure occured while checking variable validity\n");
         exit(-1);

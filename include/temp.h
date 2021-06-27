@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <math.h>
 
 double str_caller(char * str, double arg, double (*fun)(double *, int, double));
 
