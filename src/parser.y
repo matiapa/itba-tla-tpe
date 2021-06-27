@@ -47,7 +47,7 @@ int main_init=FALSE;
 
 %token <string> IF WHILE DO END ELSE
 %token <string> SYMBOL_NAME
-%token <string> BIN_OP UNI_OP LIST_OP
+%token <string> BIN_OP UNI_OP LIST_OP POWER
 %token <string> NUMBER TEXT BOOLEAN LIST
 
 %token <number> TEXT_TYPE NUMBER_TYPE BOOLEAN_TYPE LIST_TYPE
@@ -58,6 +58,7 @@ int main_init=FALSE;
 %type <list> program block
 
 %left BIN_OP
+%left POWER
 %nonassoc UNI_OP
 
 %parse-param {node_list ** program}
@@ -110,9 +111,11 @@ read: READ SYMBOL_NAME                      { $$ = add_read_node(add_variable_re
 expression: '(' expression ')'              { $$ = add_expression_node(add_operation_node("("), $2, add_operation_node(")")); }
     | UNI_OP expression                     { $$ = add_expression_node(add_operation_node($1), $2, NULL); }
     | expression BIN_OP expression          { $$ = add_expression_node($1, add_operation_node($2), $3); }
+    | expression POWER expression           { $$ = add_expression_node($1, add_operation_node("^"), $3); }
     | list_operation                        { $$ = add_expression_node($1, NULL, NULL); }
     | NUMBER                                { $$ = add_expression_node(add_number_node($1), NULL, NULL); }
     | '$' SYMBOL_NAME                       { $$ = add_expression_node(add_variable_reference($2), NULL, NULL); };
+
 
 list_operation: LIST_OP LIST                { $$ = add_list_operation($1, add_array_node($2)); }
     | LIST_OP SYMBOL_NAME                   { $$ = add_list_operation($1, add_variable_reference($2)); };

@@ -1,25 +1,3 @@
-
-number n1 = 2.5 * 4
-number n2 = $n1 >= 4
-write n1
-write n2
-
 start
-write "-------"
-number n3
-n3 = 4
-write n3
-
-while $n1 > $n2 and $n3 > $n2 do
-    write "******"
-    if $n3 > $n2 do
-        write "n3 > n2"
-    else
-        write "se fini"
-    end
-    n2 = $n2 + 1
-    write n2
-end
-
-list array = [1.5, 2.2, -4]
-write mean of array
+write 2*e^2
+write 2E 5
