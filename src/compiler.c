@@ -49,7 +49,6 @@ int main(int argc, char ** argv) {
         program = NULL;
     }
     if (check_and_set_variables(program)==-1) {
-        printf("failure occured while checking variable validity\n");
         exit(-1);
     }
     

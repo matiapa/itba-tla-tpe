@@ -26,7 +26,7 @@ endif
 
 parser:
 	lex $(SRC_FOLDER)/lexer.l
-	yacc -Wcounterexamples -d $(SRC_FOLDER)/parser.y
+	yacc -d $(SRC_FOLDER)/parser.y
 	$(CC) $(CCFLAGS) $(SRC_FOLDER)/tree_translation.c $(SRC_FOLDER)/free_tree.c $(SRC_FOLDER)/tree.c lex.yy.c y.tab.c $(SRC_FOLDER)/compiler.c $(SRC_FOLDER)/var_finder.c $(YLFLAGS) -o $(MKDIR_BIN)/compiler
 	rm -rf $(OBJ)
 

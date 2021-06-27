@@ -8,6 +8,11 @@
 
 #define MAX_VAR_NAME_LENGTH 256
 
+#define ERROR(...) fprintf(stderr, "\033[38;2;255;0;0mERROR: ");\
+    fprintf(stderr, ##__VA_ARGS__);\
+    fprintf(stderr, "\x1b[0m\n");\
+    ;
+
 
 int error=0;
 
@@ -68,7 +73,7 @@ void check_and_set_variables_rec(node_t * node,var_node ** var_list){
                 if (variable_node_var->declared==TRUE && variable_node_var->value!=NULL){ //caso donde se define la var y asigna
                     if (check_if_exists(*var_list,variable_node_var->name)!=-1)
                     {
-                        printf("Var %s already declared \n",variable_node_var->name);
+                        ERROR("Var %s already declared \n",variable_node_var->name);
                         error=-1;
                     }
                     add_to_list(var_list,create_var_node(variable_node_var->var_type,variable_node_var->name));
@@ -78,7 +83,7 @@ void check_and_set_variables_rec(node_t * node,var_node ** var_list){
                 if (variable_node_var->declared==TRUE && variable_node_var->value==NULL){ //caso donde se define la var y no se asigna
                     if (check_if_exists(*var_list,variable_node_var->name)!=-1)
                     {
-                        printf("Var %s already declared \n",variable_node_var->name);
+                        ERROR("Var %s already declared \n",variable_node_var->name);
                         error=-1;
                     }
                     add_to_list(var_list,create_var_node(variable_node_var->var_type,variable_node_var->name));
@@ -87,13 +92,13 @@ void check_and_set_variables_rec(node_t * node,var_node ** var_list){
                     int type =check_if_exists(*var_list,variable_node_var->name);
                     if (type==LIST_TYPE)
                     {
-                        printf("Var %s warning, cannot assign variable after declaration\n",variable_node_var->name);
+                        ERROR("Var %s warning, cannot assign variable after declaration\n",variable_node_var->name);
                         error=-1;
                     }
                     
                     if (type==-1)
                     {
-                        printf("Var %s is not declared yet\n",variable_node_var->name);
+                        ERROR("Var %s is not declared yet\n",variable_node_var->name);
                         error=-1;
                     }
                     variable_node_var->var_type=type;
@@ -104,7 +109,7 @@ void check_and_set_variables_rec(node_t * node,var_node ** var_list){
                     int type =check_if_exists(*var_list,variable_node_var->name);
                     if (type==-1)
                     {
-                        printf("Var %s not declared yet \n",variable_node_var->name);
+                        ERROR("Var %s not declared yet \n",variable_node_var->name);
                         error=-1;
                     }
                     variable_node_var->var_type=type;
@@ -121,7 +126,7 @@ void check_and_set_variables_rec(node_t * node,var_node ** var_list){
             
                     case EXPRESSION_NODE:
                         if(!check_var_type_in_expression(NUMBER_TYPE,(expression_node *)print_node_var->content,*var_list)){
-                            printf("Var in write is type text in expression\n");
+                            ERROR("Var in write is type text in expression\n");
                             error=-1;
                         }
                         break;
@@ -150,7 +155,7 @@ void check_and_set_variables_rec(node_t * node,var_node ** var_list){
                         check_and_set_variables_rec((node_t *) read_node_var->content,var_list);  
                         if (((variable_node *)read_node_var->content)->var_type!=NUMBER_TYPE)
                         {
-                            printf("Var %s not of type numeric \n",((variable_node *)read_node_var->content)->name);
+                            ERROR("Var %s not of type numeric \n",((variable_node *)read_node_var->content)->name);
                             error=-1;
                         }
                         break;         
@@ -166,7 +171,7 @@ void check_and_set_variables_rec(node_t * node,var_node ** var_list){
                 ;
                 if_node* if_node_var=(if_node *)node;
                 if(!check_var_type_in_expression(NUMBER_TYPE,(expression_node *)if_node_var->condition,*var_list)){
-                    printf("Var in write is type text in expression\n");
+                    ERROR("Var in write is type text in expression\n");
                     error=-1;
                 }
                 (*var_list)->references++;
@@ -186,7 +191,7 @@ void check_and_set_variables_rec(node_t * node,var_node ** var_list){
                 ;
                 while_node* while_node_var=(while_node *)node;
                 if(!check_var_type_in_expression(NUMBER_TYPE,(expression_node *)while_node_var->condition,*var_list)){
-                    printf("Var in write is type text in expression\n");
+                    ERROR("Var in write is type text in expression\n");
                     error=-1;
                 }
                 (*var_list)->references++;
@@ -206,19 +211,19 @@ void check_var_types_in_value(int type,variable_node* variable_node_var,var_node
     switch (variable_node_var->value->type){
         case TEXT_NODE:
             if (variable_node_var->var_type!=TEXT_TYPE){
-                printf("Var %s is not of type text and assigned text\n",variable_node_var->name);
+                ERROR("Var %s is not of type text and assigned text\n",variable_node_var->name);
                 error=-1;
             }
             break;
         case ARRAY_NODE:
             if (variable_node_var->var_type!=LIST_TYPE){
-                printf("Var %s is not of type list and assigned list\n",variable_node_var->name);
+                ERROR("Var %s is not of type list and assigned list\n",variable_node_var->name);
                 error=-1;
             }
             break;
         case EXPRESSION_NODE:
             if (!check_var_type_in_expression(type,(expression_node*)variable_node_var->value,var_list)){
-                printf("Var %s is of type number and assigned not number\n",variable_node_var->name);
+                ERROR("Var %s is of type number and assigned not number\n",variable_node_var->name);
                 error=-1;
             }
             break;
@@ -227,7 +232,7 @@ void check_var_types_in_value(int type,variable_node* variable_node_var,var_node
             int type =check_if_exists(var_list,((variable_node *)variable_node_var->value)->name);
             if (type==-1)
             {
-                printf("Var %s not declared yet \n",((variable_node *)variable_node_var->value)->name);
+                ERROR("Var %s not declared yet \n",((variable_node *)variable_node_var->value)->name);
                 error=-1;
             }if (variable_node_var->var_type==0)
             {
@@ -235,7 +240,7 @@ void check_var_types_in_value(int type,variable_node* variable_node_var,var_node
             }
             if (type!=variable_node_var->var_type)
             {
-               printf("Var %s is different type than %s \n",variable_node_var->name,((variable_node *)variable_node_var->value)->name);
+               ERROR("Var %s is different type than %s \n",variable_node_var->name,((variable_node *)variable_node_var->value)->name);
                error=-1;
             }
             
@@ -273,7 +278,7 @@ int check_var_type_in_expression_rec(int type,node_t * node,var_node * var_list)
             int type_var =check_if_exists(var_list,variable_node_var->name);
             if (type_var==-1)
             {
-                printf("Var not declared yet %s\n",variable_node_var->name);
+                ERROR("Var not declared yet %s\n",variable_node_var->name);
                 error=-1;
             }
             variable_node_var->var_type=type_var;
@@ -296,7 +301,7 @@ int check_var_type_in_expression_rec(int type,node_t * node,var_node * var_list)
             int result=check_var_type_in_list_op(LIST_TYPE,(list_op_node *)node,var_list);
             if (!result)
             {
-                printf("Var in list operation not of correct type\n");
+                ERROR("Var in list operation not of correct type\n");
                 error=-1;
             }
             return type==NUMBER_TYPE;
@@ -314,30 +319,30 @@ int check_var_type_in_list_op(int type,list_op_node * node,var_node * var_list){
     
     if(strcmp("elem_at",node->operator)==0){
         if (check_var_type_in_list_value(LIST_TYPE,node,var_list)==FALSE){
-            printf("List value is invalid \n");
+            ERROR("List value is invalid \n");
             error=-1;
         }
         if (check_var_type_in_expression(NUMBER_TYPE,(expression_node *)node->arg,var_list)==FALSE)
         {
-            printf("index expression in list is invalid \n");
+            ERROR("index expression in list is invalid \n");
             error=-1;
         }
         return TRUE;
     }else if(strcmp("contains",node->operator)==0){ 
         if (check_var_type_in_list_value(LIST_TYPE,node,var_list)==FALSE){
-            printf("List is invalid \n");
+            ERROR("List is invalid \n");
             error=-1;
         }
         if (check_var_type_in_expression(NUMBER_TYPE,(expression_node *)node->arg,var_list)==FALSE)
         {
-            printf("expression before IN list is invalid \n");
+            ERROR("expression before IN list is invalid \n");
             error=-1;
         }
         
         return TRUE;
     }else{
         if (check_var_type_in_list_value(LIST_TYPE,node,var_list)==FALSE){
-            printf("List is invalid \n");
+            ERROR("List is invalid \n");
             error=-1;
         }
         
@@ -352,7 +357,7 @@ int check_var_type_in_list_value(int type,list_op_node * node,var_node * var_lis
             int type_var =check_if_exists(var_list,variable_node_var->name);
             if (type_var==-1)
             {
-                printf("Var %s in list operation not declared yet \n",variable_node_var->name);
+                ERROR("Var %s in list operation not declared yet \n",variable_node_var->name);
                 error=-1;
             }
             variable_node_var->var_type=type_var;
