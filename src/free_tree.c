@@ -240,8 +240,8 @@ void * free_list_op(node_t * node) {
     } else if (lop->list->type == VARIABLE_NODE) {
         free_variable(lop->list);
     }
-    free(lop->list);
     free(lop->operator);
+    free_expression(lop->arg);
     free(node);
     return NULL;
 }

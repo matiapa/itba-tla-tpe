@@ -57,6 +57,7 @@ int reduced = 0;
 %type <node> instruction write read if if_end while
 %type <list> program block
 
+%nonassoc IN
 %left BIN_OP '-'
 %left POWER
 %left UNI_OP
@@ -131,9 +132,9 @@ expression: '(' expression ')'              { $$ = add_expression_node(add_opera
     | NUMBER                                { $$ = add_expression_node(add_number_node($1), NULL, NULL); }
     | '$' SYMBOL_NAME                       { $$ = add_expression_node(add_variable_reference($2), NULL, NULL); };
 
-list_operation: MEASURE_OF list_value       { $$ = add_list_operation($1, $2, 0); }
-    | list_value '(' NUMBER ')'             { $$ = add_list_operation("elem_at", $1, atof($3)); }
-    | NUMBER IN list_value                  { $$ = add_list_operation("contains", $3, atof($1)); };
+list_operation: MEASURE_OF list_value       { $$ = add_list_operation($1, $2, add_expression_node(add_number_node("0"), NULL, NULL)); }
+    | list_value '(' expression ')'         { $$ = add_list_operation("elem_at", $1, $3); }
+    | expression IN list_value              { $$ = add_list_operation("contains", $3, $1); };
 
 list_value: SYMBOL_NAME                     { $$ = add_variable_reference($1); }
     | LIST                                  { $$ = add_array_node($1); }

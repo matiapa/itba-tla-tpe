@@ -124,8 +124,6 @@ void print_var(node_t * node) {
 
 void print_print(node_t * node) {
     print_node * print = (print_node *) node;
-    // no esta funcionando para variables porque esta faltando el lookup del tipo de variable
-    // el lookup deberia rellenar el valor de var_type
     switch(print->content->type) {
         case VARIABLE_NODE:
             ;
@@ -373,14 +371,19 @@ void print_list_op(node_t * node) {
 
     if (lop->list->type == ARRAY_NODE) {
         char * str = ((array_node *) lop->list)->array;
-        P("str_caller(\"%s\", %lf, %s)", str, lop->arg, lop->operator);
+        P("str_caller(\"%s\", (", str);
+        print_expression(lop->arg);
+        P("), %s)", lop->operator);
         free(str);
     } else if (lop->list->type == VARIABLE_NODE) {
         variable_node * symbol = (variable_node *) lop->list;
-        P("%s(%s, sizeof(%s)/sizeof(double), %lf)", lop->operator, symbol->name, symbol->name, lop->arg);
+        P("%s(%s, sizeof(%s)/sizeof(double), (", lop->operator, symbol->name, symbol->name);
+        print_expression(lop->arg);
+        P("))");
         free(symbol->name);
     }
 
     free(lop->list);
     free(lop->operator);
+    free(lop->arg);
 }

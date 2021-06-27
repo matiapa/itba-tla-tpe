@@ -58,7 +58,7 @@ typedef struct list_op_node {
     node_type type;
     char * operator;
     node_t * list;    // ARRAY_NODE or VARIABLE_NODE
-    double arg;
+    node_t * arg;     // EXPRESSION_NODE
 } list_op_node;
 
 typedef struct block_node {
@@ -130,7 +130,7 @@ node_t * add_while_node(node_t * condition, node_t * block);
 
 node_t * add_operation_node(char * operation);
 
-node_t * add_list_operation(char * operator, node_t * list, double arg);
+node_t * add_list_operation(char * operator, node_t * list, node_t * arg);
 
 #endif
 

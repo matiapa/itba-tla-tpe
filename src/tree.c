@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-node_t * add_list_operation(char * operator, node_t * list, double arg) {
+node_t * add_list_operation(char * operator, node_t * list, node_t * arg) {
     list_op_node * node = malloc(sizeof(list_op_node));
 
     node->type = LIST_OP_NODE;

@@ -20,3 +20,10 @@ end
 if 2 in [2,3,4] do
     write [2,3,4](1)
 end
+
+list l4 = [1,2,3,4]
+number n4 = 0
+while $n4 < 4 do
+    write l4($n4 + 1 - 1)
+    n4 = $n4 + 1
+end
