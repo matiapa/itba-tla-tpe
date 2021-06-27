@@ -1,12 +1,13 @@
 # WORKING
-write 2 * 3     
-write 6 % 4     
+write 2*3     
+write 6%4     
 write 6 mod 4   
-write 2E 1      
+write 2E 1
+num hola = 5      
 
 start
-    write 2 * 3     # 6
-    write 6 % 4     # 2
+    write 2*3     # 6
+    write 6%4     # 2
     write 6 mod 4   # 2
     write 2E 1      # 20
 

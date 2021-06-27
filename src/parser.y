@@ -10,18 +10,15 @@
 
 extern int yylex();
 void yyerror(node_list ** program, char *s);
+void warning(char * s);
 
 extern FILE * out;
 extern void * malloc();
 
-// Auxiliar macros
-
-#define P(...) fprintf(out, ##__VA_ARGS__);
-
-#define ERROR(...) fprintf(stderr, "\x1b[31mERROR: ");\
+#define WARNING(...) fprintf(stderr, "\033[38;2;255;165;0mWARNING: ");\
     fprintf(stderr, ##__VA_ARGS__);\
     fprintf(stderr, "\x1b[0m\n");\
-    exit(-1);
+    ;
 
 // Global variables
 
@@ -73,10 +70,21 @@ program: instruction program { $$ = (*program = (node_list *)add_element_to_list
 
 instruction: full_declare { $$ = add_instruction_node($1); }
     | assign    { $$ = add_instruction_node($1); }
-    | write     { $$ = main_init == FALSE ? free_write($1) : add_instruction_node($1); }
-    | read      { $$ = main_init == FALSE ? free_read($1) :add_instruction_node($1); }
-    | if        { $$ = main_init == FALSE ? free_if_node($1) : add_instruction_node($1); }
-    | while     { $$ = main_init == FALSE ? free_while_node($1) : add_instruction_node($1); }
+    | write     { if (main_init == FALSE) {
+                    $$ = free_write($1); 
+                    warning("write");
+                  } else $$ = add_instruction_node($1); }
+    | read      { if (main_init == FALSE) {
+                    $$ = free_read($1);
+                    warning("read");
+                  } else $$ = add_instruction_node($1); }
+    | if        { if (main_init == FALSE) {
+                    $$ = free_if_node($1);
+                    warning("if");
+                  } else $$ = add_instruction_node($1); }
+    | while     { if (main_init == FALSE) {
+                    $$ = free_while_node($1);
+                  } else $$ = add_instruction_node($1); }
     | START     { main_init=TRUE; $$=NULL; };
 
 block: instruction block { $$ = (node_list *)add_element_to_list($2, $1); }
@@ -128,3 +136,9 @@ list_value: SYMBOL_NAME                     { $$ = add_variable_reference($1); }
     | LIST                                  { $$ = add_array_node($1); }
 
 %%
+
+
+void warning(char * s) {
+    extern int yylineno;
+    WARNING("%s at line %d, will not be considered.", s, yylineno);
+}
