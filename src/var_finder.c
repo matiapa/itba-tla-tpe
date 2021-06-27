@@ -122,6 +122,10 @@ void check_and_set_variables_rec(node_t * node,var_node ** var_list){
                     case TEXT_NODE:
                     //va vacio porque no hay variables aca dentro
                         break;
+
+                    case ARRAY_NODE:
+                    //va vacio porque no hay variables aca dentro
+                        break;
                     
                     default:
                         #ifdef YYDEBUG
