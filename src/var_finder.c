@@ -336,9 +336,7 @@ var_node * create_var_node(int type, char * name){
 
 void add_to_list(var_node ** list,var_node * element){
     if (*list!=NULL){
-        (*list)->references++;
         element->next=*list;
-        
     }
     *list=element;
 
@@ -351,7 +349,7 @@ var_node * free_list(var_node * list){
     }
     
     var_node * current=list;
-    while (current!=NULL && current->references<=1)
+    while (current!=NULL && current->references<1)
     {
         var_node * next=current->next;
         free(current);
