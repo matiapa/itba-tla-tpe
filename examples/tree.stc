@@ -12,6 +12,8 @@ write n1
 write n3
 write 2^2
 write 2!
+write 2 comb 1
+write (2^2) perm 2
 
 while $n1 > $n2 and $n3 > $n2 do
     write "******"

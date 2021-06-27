@@ -32,7 +32,7 @@ e                                                   { strcpy(yylval.string, "2.7
 
 =                                                   { return ASSIGN; }
 
-[-+\*/%<>]|<=|>=                                    { strcpy(yylval.string, yytext); return BIN_OP; }
+[-+\*/%<>]|<=|>=|comb|perm                          { strcpy(yylval.string, yytext); return BIN_OP; }
 !                                                   { strcpy(yylval.string, yytext); return FACT; }
 \^                                                  { strcpy(yylval.string, "^"); return POWER; }
 neq		                                            { strcpy(yylval.string, "!="); return BIN_OP; }

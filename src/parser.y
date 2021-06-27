@@ -59,7 +59,8 @@ int main_init=FALSE;
 
 %left BIN_OP
 %left POWER
-%nonassoc UNI_OP
+%left UNI_OP
+%left FACT
 
 %parse-param {node_list ** program}
 
