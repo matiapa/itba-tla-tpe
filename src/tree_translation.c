@@ -135,7 +135,7 @@ void print_print(node_t * node) {
             if(var->var_type == TEXT_TYPE)
                 P("printf(\"%%s\\n\", %s);\n", var->name);
             if (var->var_type == LIST_TYPE) {
-                P("print_array(%s, sizeof(%s)/sizeof(double));\n", var->name, var->name);
+                P("print_array(%s, sizeof(%s)/sizeof(double), 0.0);\n", var->name, var->name);
             }
             free(var->name);
             break;
@@ -153,7 +153,7 @@ void print_print(node_t * node) {
         case ARRAY_NODE:
             ;
             array_node * array = (array_node *)print->content;
-            P("str_caller(\"%s\", %s);\n", array->array, "print_array");
+            P("str_caller(\"%s\", 0.0, %s);\n", array->array, "print_array");
             free(array->array);
         default:
             break;
@@ -364,15 +364,16 @@ void print_while_node(node_t * node) {
 void print_list_op(node_t * node) {
     list_op_node * lop = (list_op_node *)node;
 
-    if (lop->input_list->type == ARRAY_NODE) {
-        char * str = ((array_node *) lop->input_list)->array;
-        P("str_caller(\"%s\", %s)", str, lop->operator);
+    if (lop->list->type == ARRAY_NODE) {
+        char * str = ((array_node *) lop->list)->array;
+        P("str_caller(\"%s\", %lf, %s)", str, lop->arg, lop->operator);
         free(str);
-    } else if (lop->input_list->type == VARIABLE_NODE) {
-        variable_node * symbol = (variable_node *) lop->input_list;
-        P("%s(%s, sizeof(%s)/sizeof(double))", lop->operator, symbol->name, symbol->name);
+    } else if (lop->list->type == VARIABLE_NODE) {
+        variable_node * symbol = (variable_node *) lop->list;
+        P("%s(%s, sizeof(%s)/sizeof(double), %lf)", lop->operator, symbol->name, symbol->name, lop->arg);
         free(symbol->name);
     }
-    free(lop->input_list);
+
+    free(lop->list);
     free(lop->operator);
 }

@@ -6,9 +6,6 @@
 #include <string.h>
 
 
-
-
-
 void * free_tree(node_list * program) {
 
     if (program == NULL)
@@ -237,12 +234,12 @@ void * free_while_node(node_t * node) {
 void * free_list_op(node_t * node) {
     list_op_node * lop = (list_op_node *)node;
 
-    if (lop->input_list->type == ARRAY_NODE) {
-        free_array_node(lop->input_list);
-    } else if (lop->input_list->type == VARIABLE_NODE) {
-        free_variable(lop->input_list);
+    if (lop->list->type == ARRAY_NODE) {
+        free_array_node(lop->list);
+    } else if (lop->list->type == VARIABLE_NODE) {
+        free_variable(lop->list);
     }
-    free(lop->input_list);
+    free(lop->list);
     free(lop->operator);
     free(node);
     return NULL;

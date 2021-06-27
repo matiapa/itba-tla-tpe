@@ -1,31 +1,31 @@
 #include <stdio.h>
 #include <math.h>
 
-double str_caller(char * str, double (*fun)(double *, int));
+double str_caller(char * str, double arg, double (*fun)(double *, int, double));
 
-double mean(double * list, int size);
+double mean(double * list, int size, double arg);
 
-double median(double * list, int size);
+double median(double * list, int size, double arg);
 
-double mode(double * list, int size);
+double mode(double * list, int size, double arg);
 
-double stdev(double * list, int size);
+double stdev(double * list, int size, double arg);
 
-double range(double * list, int size);
+double range(double * list, int size, double arg);
 
-double qtr1(double * list, int size);
+double qtr1(double * list, int size, double arg);
 
-double qtr3(double * list, int size);
+double qtr3(double * list, int size, double arg);
 
-double inter_qtr(double * list, int size);
+double iqtr(double * list, int size, double arg);
 
-double perc_n(double * list, int size);
+double perc_n(double * list, int size, int n);
 
-int gcd(double * list, int size);
+double elem_at(double * list, int size, double i);
 
-int mcm(double * list, int size);
+double contains(double * list, int size, double n);
 
-double print_array(double * list_var, int size);
+double print_array(double * list_var, int size, double arg);
 
 double factorial(double input);
 

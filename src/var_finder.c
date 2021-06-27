@@ -294,10 +294,10 @@ int check_var_type_in_expression_rec(int type,node_t * node,var_node * var_list)
 }
 
 int check_var_type_in_list_op(int type,list_op_node * node,var_node * var_list){
-    switch(node->input_list->type) {
+    switch(node->list->type) {
         case VARIABLE_NODE:
             ;
-            variable_node* variable_node_var=(variable_node *)node->input_list;
+            variable_node* variable_node_var=(variable_node *)node->list;
             int type_var =check_if_exists(var_list,variable_node_var->name);
             if (type_var==-1)
             {

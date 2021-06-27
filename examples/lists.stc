@@ -12,3 +12,11 @@ list l2 = [3,4]
 number n1 = mean of l2
 write l2
 write n1
+
+list l3 = [4,5,6,7,8]
+if 9 in l3 or 5 in l3 do
+    write l3(2)
+end
+if 2 in [2,3,4] do
+    write [2,3,4](1)
+end

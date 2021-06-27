@@ -25,9 +25,10 @@ extern void * malloc();
 
 // Global variables
 
-int yydebug=1;
+int yydebug = 1;
 int recursion = 0;
-int main_init=FALSE;
+int main_init = FALSE;
+int reduced = 0;
 
 %}
 
@@ -41,8 +42,8 @@ int main_init=FALSE;
 }
 
 %token START EOL FIN
-%token MEAN MEDIAN MODE STDEV RANGE QTR1 QTR3 INTER_QTR
 %token COMB PERM 
+%token MEAN MEDIAN MODE STDEV RANGE QTR1 QTR3 INTER_QTR IN
 %token ASSIGN WRITE READ
 
 %token <string> IF WHILE DO END ELSE
@@ -51,10 +52,11 @@ int main_init=FALSE;
 %token <string> NUMBER TEXT BOOLEAN LIST
 
 %token <number> TEXT_TYPE NUMBER_TYPE BOOLEAN_TYPE LIST_TYPE
+%token <number> NATURAL
 
 %type <number> type
-%type <node> full_declare declare assign value expression 
-%type <node> instruction write read list_operation if if_end while
+%type <node> full_declare declare assign value expression list_operation list_value
+%type <node> instruction write read if if_end while
 %type <list> program block
 
 %left BIN_OP
@@ -118,8 +120,11 @@ expression: '(' expression ')'              { $$ = add_expression_node(add_opera
     | NUMBER                                { $$ = add_expression_node(add_number_node($1), NULL, NULL); }
     | '$' SYMBOL_NAME                       { $$ = add_expression_node(add_variable_reference($2), NULL, NULL); };
 
+list_operation: MEASURE_OF list_value       { $$ = add_list_operation($1, $2, 0); }
+    | list_value '(' NUMBER ')'             { $$ = add_list_operation("elem_at", $1, atof($3)); }
+    | NUMBER IN list_value                  { $$ = add_list_operation("contains", $3, atof($1)); };
 
-list_operation: LIST_OP LIST                { $$ = add_list_operation($1, add_array_node($2)); }
-    | LIST_OP SYMBOL_NAME                   { $$ = add_list_operation($1, add_variable_reference($2)); };
+list_value: SYMBOL_NAME                     { $$ = add_variable_reference($1); }
+    | LIST                                  { $$ = add_array_node($1); }
 
 %%
