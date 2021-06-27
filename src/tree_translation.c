@@ -211,7 +211,7 @@ void switch_print_expression(node_t * node) {
     }
 }
 
-int print_operation(node_t * first, operation_node * second, node_t * third) {
+int print_binary_operation(node_t * first, operation_node * second, node_t * third) {
 
     if (strcmp(second->operation, "%") == 0) {
         P("(int)");
@@ -255,18 +255,61 @@ int print_operation(node_t * first, operation_node * second, node_t * third) {
         }
         P(") ");
         return 1;
+    } else if (strcmp(second->operation, "comb") == 0) {
+        P("combination(");
+        if (first != NULL) {
+            switch_print_expression(first);
+            free(first);
+        }
+        P(", ");
+        if (third != NULL) {
+            switch_print_expression(third);
+            free(third);
+        }
+        P(") ");
+        return 1;
+    } else if (strcmp(second->operation, "perm") == 0) {
+        P("permutation(");
+        if (first != NULL) {
+            switch_print_expression(first);
+            free(first);
+        }
+        P(", ");
+        if (third != NULL) {
+            switch_print_expression(third);
+            free(third);
+        }
+        P(") ");
+        return 1;
+    } else if (strcmp(second->operation, "!") == 0) {
+        P("factorial(");
+        if (first != NULL) {
+            switch_print_expression(first);
+            free(first);
+        }
+        P(") ");
+        return 1;
     }
 
     return 0;
 
 }
 
+int print_unary_operation(operation_node * first, node_t * second, node_t * third) {
+    
+    return 0;
+}
+
 void print_expression(node_t * exp) {
     expression_node * node = (expression_node *)exp;
     int op = 0;
 
+    if (node->first != NULL && node->first->type == OPERATION_NODE) {
+        op = print_unary_operation((operation_node *)node->first, node->second, node->third);
+    } 
+
     if (node->second != NULL && node->second->type == OPERATION_NODE) {
-        op = print_operation(node->first, (operation_node *)node->second, node->third);
+        op = print_binary_operation(node->first, (operation_node *)node->second, node->third);
     } 
     
     if (!op) {

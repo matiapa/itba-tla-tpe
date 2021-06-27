@@ -107,35 +107,32 @@ double print_array(double * list_var, int size) {
     return 0;
 }
 
-double factorial(double input){
+double factorial(double input) {
     if (input < 0)
-    {
         return 0;
-    }
+    
     double result =floor(input);
     for (int i = result-1; i >0; i--)
-    {
         result*=i;
-    }
+    
     return result;
 }
 
-double permutation(double n,double r){
+double permutation(double n,double r) {
     n=floor(n);
     r=floor(r);
 
     if (n<r || n<0 || r<0)
-    {
         return -1;
-    }
+    
     return factorial(n)/factorial(n-r);
 }
-double combination(double n,double r){
+
+double combination(double n,double r) {
     n=floor(n);
     r=floor(r);
     if (n<r || n<0 || r<0)
-    {
         return -1;
-    }
+    
     return factorial(n)/(factorial(n-r)*factorial(r));
 }
