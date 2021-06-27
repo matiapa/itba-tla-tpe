@@ -37,8 +37,9 @@ e                                                   { strcpy(yylval.string, "2.7
 \[[ \t]*{DECIMAL}([ \t]*,[ \t]*{DECIMAL})*[ \t]*\]  { strcpy(yylval.string, yytext); return LIST; }
 =                           { return ASSIGN;     }
 
-\^                          { strcpy(yylval.string, "^"); return POWER; }
+\^|\*\*                     { strcpy(yylval.string, "^"); return POWER; }
 [-+\*/%<>]|<=|>=            { strcpy(yylval.string, yytext); return BIN_OP; }
+mod                         { strcpy(yylval.string, "%"); return BIN_OP; }
 neq		                    { strcpy(yylval.string, "!="); return BIN_OP; }
 eq		                    { strcpy(yylval.string, "=="); return BIN_OP; }
 and		                    { strcpy(yylval.string, "&&"); return BIN_OP; }
