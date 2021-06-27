@@ -1,4 +1,7 @@
-# NOT WORKING
+# VARIABLES
+
+# Prueba el comportamiento de la declaración y asignación de los distintos tipos de identificadores
+
 start
 
 # Los números son variables y se asignan por copia
@@ -25,8 +28,3 @@ l1(0) = 3
 l2(0) = 4
 write l1        # [3,2]
 write l2        # [4,3]
-
-# text a = "hola"
-# number n = 2
-# n = a
-# l1 = l3

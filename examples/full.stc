@@ -1,0 +1,30 @@
+# PRUEBA COMPLETA
+
+# Implementa algunas de las funciones built in del lenguaje para mostrar un uso real del mismo
+
+start
+list data size 3
+number data_size = 3
+
+number n = 0
+while $n < $data_size do
+    write "Ingrese la muestra número: "
+    write $n
+    number aux
+    read aux
+    data($n) = $aux
+    n = $n + 1
+end
+
+number _mean = 0
+while $n > 0 do
+    _mean = $_mean + data($n - 1)
+    n = $n - 1
+end
+_mean = $_mean / $data_size
+
+write "La media calculada con el programa es"
+write $_mean
+
+write "La media calculada con el operador built-in es"
+write mean of data
