@@ -48,8 +48,9 @@ int reduced = 0;
 
 %token <string> IF WHILE DO END ELSE
 %token <string> SYMBOL_NAME
-%token <string> BIN_OP UNI_OP LIST_OP POWER FACT
-%token <string> NUMBER TEXT BOOLEAN LIST MEASURE_OF
+
+%token <string> BIN_OP UNI_OP UMINUS MEASURE_OF POWER FACT
+%token <string> NUMBER TEXT BOOLEAN LIST
 
 %token <number> TEXT_TYPE NUMBER_TYPE BOOLEAN_TYPE LIST_TYPE
 %token <number> NATURAL
@@ -59,7 +60,7 @@ int reduced = 0;
 %type <node> instruction write read if if_end while
 %type <list> program block
 
-%left BIN_OP
+%left BIN_OP '-'
 %left POWER
 %left UNI_OP
 %left FACT
@@ -113,7 +114,9 @@ read: READ SYMBOL_NAME                      { $$ = add_read_node(add_variable_re
 
 expression: '(' expression ')'              { $$ = add_expression_node(add_operation_node("("), $2, add_operation_node(")")); }
     | UNI_OP expression                     { $$ = add_expression_node(add_operation_node($1), $2, NULL); }
+    | '-' expression           %prec UNI_OP { $$ = add_expression_node(add_operation_node("-"), $2, NULL); }
     | expression BIN_OP expression          { $$ = add_expression_node($1, add_operation_node($2), $3); }
+    | expression '-' expression             { $$ = add_expression_node($1, add_operation_node("-"), $3); }
     | expression POWER expression           { $$ = add_expression_node($1, add_operation_node("^"), $3); }
     | expression FACT                       { $$ = add_expression_node($1, add_operation_node($2), NULL); }
     | list_operation                        { $$ = add_expression_node($1, NULL, NULL); }

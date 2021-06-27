@@ -17,7 +17,7 @@ extern int reduced;
 
 %option yylineno
 
-DECIMAL [-]?[0-9]+(\.[0-9]+)?
+DECIMAL [0-9]+(\.[0-9]+)?
 SP      [ \t]+
 
 %%
@@ -38,7 +38,7 @@ e                                                   { strcpy(yylval.string, "2.7
 =                           { return ASSIGN;     }
 
 \^|\*\*                     { strcpy(yylval.string, "^"); return POWER; }
-[-+\*/%<>]|<=|>=|comb|perm  { strcpy(yylval.string, yytext); return BIN_OP; }
+[+\*/%<>]|<=|>=|comb|perm   { strcpy(yylval.string, yytext); return BIN_OP; }
 !                           { strcpy(yylval.string, yytext); return FACT; }
 mod                         { strcpy(yylval.string, "%"); return BIN_OP; }
 neq		                    { strcpy(yylval.string, "!="); return BIN_OP; }
@@ -47,7 +47,7 @@ and		                    { strcpy(yylval.string, "&&"); return BIN_OP; }
 or		                    { strcpy(yylval.string, "||"); return BIN_OP; }
 
 not		                    { strcpy(yylval.string, "!"); return UNI_OP; }
-[-~]                        { strcpy(yylval.string, yytext); return UNI_OP; }
+~                           { strcpy(yylval.string, "~"); return UNI_OP; }
 
 (mean|median|mode|stdev|range|qtr1|qtr3|iqtr){SP}of { put_trimmed(yytext); return MEASURE_OF; }
 in                          { return IN; }

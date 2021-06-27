@@ -214,20 +214,22 @@ void switch_print_expression(node_t * node) {
 int print_binary_operation(node_t * first, operation_node * second, node_t * third) {
 
     if (strcmp(second->operation, "%") == 0) {
-        P("(int)");
+        P("(int) (");
         if (first != NULL) {
             switch_print_expression(first);
             free(first);
         }
+        P(")");
         if (second != NULL) {
             switch_print_expression((node_t *)second);
             free(second);
         }
-        P("(int)");
+        P("(int) (");
         if (third != NULL) {
             switch_print_expression(third);
             free(third);
         }
+        P(")");
         return 1;
     } else if (strcmp(second->operation, "^") == 0) {
         P(" pow(");
