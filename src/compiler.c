@@ -61,6 +61,10 @@ int main(int argc, char ** argv) {
 
     system("gcc src/functions.c temp.c -lm -o program");
 
+    #if YYDEBUG == 0
+    system("rm -rf temp.c");
+    #endif
+
     printf("\nSuccesfully parsed\n");
 
 }
