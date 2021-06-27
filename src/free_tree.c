@@ -204,6 +204,7 @@ void * free_expression(node_t * exp) {
     if (node->third != NULL) {
         switch_free_expression(node->third);
     }
+    free(node);
     return NULL;
 }
 

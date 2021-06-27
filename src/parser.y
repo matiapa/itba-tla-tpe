@@ -49,7 +49,7 @@ int reduced = 0;
 %token <string> IF WHILE DO END ELSE
 %token <string> SYMBOL_NAME
 %token <string> BIN_OP UNI_OP LIST_OP POWER FACT
-%token <string> NUMBER TEXT BOOLEAN LIST
+%token <string> NUMBER TEXT BOOLEAN LIST MEASURE_OF
 
 %token <number> TEXT_TYPE NUMBER_TYPE BOOLEAN_TYPE LIST_TYPE
 %token <number> NATURAL

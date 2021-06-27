@@ -1,19 +1,23 @@
-# PARTIALLY WORKING
+# WORKING
+write 2 * 3     
+write 6 % 4     
+write 6 mod 4   
+write 2E 1      
+
 start
+    write 2 * 3     # 6
+    write 6 % 4     # 2
+    write 6 mod 4   # 2
+    write 2E 1      # 20
 
-write 2 * 3     # 6
-write 6 % 4     # 2
-write 6 mod 4   # 2
-write 2E 1      # 20
+    write 3!       # 6     # NOT IMPLEMENTED
+    write 2**3     # 8     # MEMORY LEAK
+    write 2^3      # 8     # MEMORY LEAK
+    write e^1      # 2.73  # MEMORY LEAK
 
-#write 3!       # 6     # NOT IMPLEMENTED
-#write 2**3     # 8     # MEMORY LEAK
-#write 2^3      # 8     # MEMORY LEAK
-#write e^1      # 2.73  # MEMORY LEAK
-
-if 3>2 or 0 and 3 neq 1 do
-    write "ok"
-end
-if not(3<2 or 0 or 3 eq 1) do
-    write "ok"
-end
+    if 3>2 or 0 and 3 neq 1 do
+        write "ok"
+    end
+    if not(3<2 or 0 or 3 eq 1) do
+        write "ok"
+    end

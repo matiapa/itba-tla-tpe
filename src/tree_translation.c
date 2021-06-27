@@ -235,6 +235,7 @@ int print_binary_operation(node_t * first, operation_node * second, node_t * thi
             switch_print_expression(first);
             free(first);
         }
+        free_operation_node((node_t *)second);
         P(", ");
         if (third != NULL) {
             switch_print_expression(third);
@@ -247,6 +248,7 @@ int print_binary_operation(node_t * first, operation_node * second, node_t * thi
             switch_print_expression(first);
             free(first);
         }
+        free_operation_node((node_t *)second);
         P(" * ");
         P(" pow(10,");
         if (third != NULL) {
@@ -261,6 +263,7 @@ int print_binary_operation(node_t * first, operation_node * second, node_t * thi
             switch_print_expression(first);
             free(first);
         }
+        free_operation_node((node_t *)second);
         P(", ");
         if (third != NULL) {
             switch_print_expression(third);
@@ -274,6 +277,7 @@ int print_binary_operation(node_t * first, operation_node * second, node_t * thi
             switch_print_expression(first);
             free(first);
         }
+        free_operation_node((node_t *)second);
         P(", ");
         if (third != NULL) {
             switch_print_expression(third);
@@ -288,6 +292,7 @@ int print_binary_operation(node_t * first, operation_node * second, node_t * thi
             free(first);
         }
         P(") ");
+        free_operation_node((node_t *)second);
         return 1;
     }
 

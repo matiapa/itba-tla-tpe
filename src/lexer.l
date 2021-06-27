@@ -32,20 +32,20 @@ read       { return READ; }
 
 \"[^\"]+\"                                          { strcpy(yylval.string, yytext); return TEXT; }
 e                                                   { strcpy(yylval.string, "2.73"); return NUMBER; }
-[E][ ]                                                   { strcpy(yylval.string, yytext); return BIN_OP; }
+[E][ ]                                              { strcpy(yylval.string, yytext); return BIN_OP; }
 {DECIMAL}                                           { strcpy(yylval.string, yytext); return NUMBER; }
 \[[ \t]*{DECIMAL}([ \t]*,[ \t]*{DECIMAL})*[ \t]*\]  { strcpy(yylval.string, yytext); return LIST; }
 =                           { return ASSIGN;     }
 
 \^|\*\*                     { strcpy(yylval.string, "^"); return POWER; }
-[-+\*/%<>]|<=|>=            { strcpy(yylval.string, yytext); return BIN_OP; }
+[-+\*/%<>]|<=|>=|comb|perm  { strcpy(yylval.string, yytext); return BIN_OP; }
+!                           { strcpy(yylval.string, yytext); return FACT; }
 mod                         { strcpy(yylval.string, "%"); return BIN_OP; }
 neq		                    { strcpy(yylval.string, "!="); return BIN_OP; }
 eq		                    { strcpy(yylval.string, "=="); return BIN_OP; }
 and		                    { strcpy(yylval.string, "&&"); return BIN_OP; }
 or		                    { strcpy(yylval.string, "||"); return BIN_OP; }
 
-[-+\*/%<>]|<=|>=|comb|perm                          { strcpy(yylval.string, yytext); return BIN_OP; }
 not		                    { strcpy(yylval.string, "!"); return UNI_OP; }
 [-~]                        { strcpy(yylval.string, yytext); return UNI_OP; }
 
