@@ -85,13 +85,19 @@ void check_and_set_variables_rec(node_t * node,var_node ** var_list){
                 }
                 if (variable_node_var->declared==FALSE && variable_node_var->value!=NULL){ //caso donde no se define la var pero se asigna
                     int type =check_if_exists(*var_list,variable_node_var->name);
-                        if (type==-1)
-                        {
-                            printf("Var %s not declared yet \n",variable_node_var->name);
-                            error=-1;
-                        }
-                        variable_node_var->var_type=type;
-                        check_var_types_in_value(type,variable_node_var,*var_list);
+                    if (type==LIST_TYPE)
+                    {
+                        printf("Var %s warning, cannot assign variable after declaration\n",variable_node_var->name);
+                        error=-1;
+                    }
+                    
+                    if (type==-1)
+                    {
+                        printf("Var %s not declared yet \n",variable_node_var->name);
+                        error=-1;
+                    }
+                    variable_node_var->var_type=type;
+                    check_var_types_in_value(type,variable_node_var,*var_list);
                 }
                 if (variable_node_var->declared==FALSE && variable_node_var->value==NULL){ //caso donde solo se usa la var
                     
