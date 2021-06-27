@@ -1,13 +1,16 @@
-# WORKING
+# MEDIDAS DE RESUMEN
+
+# Prueba la validez de los operadores sobre lista del tipo medidas de resumen
+
 start
 
 list l1 = [1,2,2,2,5,4,4,3,9,6]
 
-write mean of l1
-write mode of l1
-write range of l1
-write median of l1
-write stdev of l1
-write qtr1 of l1
-write qtr3 of l1
-write iqtr of l1
+write mean of l1 eq 3.8
+write mode of l1 eq 4.0
+write range of l1 eq 8.0
+write median of l1 eq 3.0
+write stdev of l1 eq 2.394438
+write qtr1 of l1 eq 2.0
+write qtr3 of l1 eq 4.5
+write iqtr of l1 eq 2.5

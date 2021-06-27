@@ -1,4 +1,21 @@
-# WORKING
+# ESTRUCTURAS DE CONTROL
+
+# Pide un número n1 e imprime n1 una sucesión de "-" y "+"
+# Para el input n1 = 4 debería producir la salida
+# 1.000000
+# -
+# 2.000000
+# -
+# -
+# 3.000000
+# +
+# +
+# +
+# 4.000000
+# +
+# +
+# +
+# +
 
 start
 

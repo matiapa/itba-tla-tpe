@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <math.h>
 
+double absd(double x);
+
 double str_caller(char * str, double arg, double (*fun)(double *, int, double));
 
 double mean(double * list, int size, double arg);

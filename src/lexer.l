@@ -35,7 +35,7 @@ size       { return SIZE; }
 e                                                   { strcpy(yylval.string, "2.73"); return NUMBER; }
 [E][ ]                                              { strcpy(yylval.string, yytext); return BIN_OP; }
 {DECIMAL}                                           { strcpy(yylval.string, yytext); return NUMBER; }
-\[[ \t]*{DECIMAL}([ \t]*,[ \t]*{DECIMAL})*[ \t]*\]  { strcpy(yylval.string, yytext); return LIST; }
+\[[ \t]*-?{DECIMAL}([ \t]*,[ \t]*-?{DECIMAL})*[ \t]*\]  { strcpy(yylval.string, yytext); return LIST; }
 =                           { return ASSIGN;     }
 
 \^|\*\*                     { strcpy(yylval.string, "^"); return POWER; }

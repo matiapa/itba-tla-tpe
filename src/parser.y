@@ -53,7 +53,7 @@ int reduced = 0;
 %token <number> NATURAL
 
 %type <number> type
-%type <node> full_declare list_declare declare assign value expression list_operation list_value
+%type <node> full_declare declare assign list_full_declare value expression list_operation list_value
 %type <node> instruction write read if if_end while list_mutate
 %type <list> program block
 
@@ -72,8 +72,8 @@ program: instruction program { $$ = (*program = (node_list *)add_element_to_list
 
 instruction:
     full_declare    { $$ = add_instruction_node($1); }
-    | list_declare  { $$ = add_instruction_node($1); }
     | assign        { $$ = add_instruction_node($1); }
+    | list_full_declare  { $$ = add_instruction_node($1); }
     | list_mutate   { $$ = add_instruction_node($1); }
     | write         { if (main_init == FALSE) {
                         $$ = free_write($1); 
@@ -113,12 +113,11 @@ type: NUMBER_TYPE | TEXT_TYPE       ;
 assign: SYMBOL_NAME ASSIGN value { $$ = assign_variable_node($1, $3); };
 value: expression   { $$ = $1; }
     | SYMBOL_NAME   { $$ = add_variable_reference($1); }
-    | TEXT          { $$ = add_text_node($1);   }
-    | LIST          { $$ = add_array_node($1);  };
+    | TEXT          { $$ = add_text_node($1);   };
 
-list_declare:
-    LIST_TYPE SYMBOL_NAME SIZE NUMBER       { $$ = add_value_variable(declare_variable_node($2, $1), add_number_node($4)); }
-    | LIST_TYPE SYMBOL_NAME ASSIGN value    { $$ = add_value_variable(declare_variable_node($2, $1), $4); };
+list_full_declare:
+    LIST_TYPE SYMBOL_NAME SIZE NUMBER          { $$ = add_value_variable(declare_variable_node($2, $1), add_number_node($4)); }
+    | LIST_TYPE SYMBOL_NAME ASSIGN LIST        { $$ = add_value_variable(declare_variable_node($2, $1), add_array_node($4)); };
 
 list_mutate: SYMBOL_NAME '(' expression ')' ASSIGN expression { $$ = add_list_mutation_node($1, $3, $6); };
 

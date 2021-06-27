@@ -116,6 +116,7 @@ void print_var(node_t * node) {
         } else if (var->value->type == TEXT_NODE) {
             text_node * text = (text_node *) var->value;
             P("%s", text->text);
+            free(text->text);
         } else if (var->value->type == ARRAY_NODE) {
             array_node * array = (array_node *) var->value;
             array->array[strlen(array->array)-1] = 0;
@@ -301,6 +302,20 @@ int print_binary_operation(node_t * first, operation_node * second, node_t * thi
             free(first);
         }
         P(") ");
+        free_operation_node((node_t *)second);
+        return 1;
+    } else if (strcmp(second->operation, "==") == 0) {
+        P("(absd((");
+        if (first != NULL) {
+            switch_print_expression(first);
+            free(first);
+        }
+        P(") - (");
+        if (third != NULL) {
+            switch_print_expression(third);
+            free(third);
+        }
+        P(")) <= 0.000001)");
         free_operation_node((node_t *)second);
         return 1;
     }

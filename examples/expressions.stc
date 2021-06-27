@@ -1,17 +1,6 @@
-# WORKING
-start
+# EXPRESIONES ALGEBRÁICAS
 
-# Parenthesis are just for readability
-
-number p1 = (3! eq 6) and (--2 eq 2) and (~5 eq -6) and (2^3 eq 8) and (2**3 eq 8) and (e^1 eq 2.73)
-number p2 = (2*3 eq 6) and (2E 1 eq 20) and (2*6 eq 12) and (12/6 eq 2) and (6%4 eq 2) and (6 mod 4 eq 2)
-number p3 = (2+3 eq 5) and (3-2 eq 1) and (2<3) and (3>2) and (2<=2) and (3>=3) and (4 eq 4) and (5 neq 4)  
-
-if $p1 and $p2 and $p3 do
-    write "OK1"
-end
-
-# Precedence levels:
+# Niveles de precedencia y asociatividad:
 # 'measure of' 'n in' 'l[n]' [NA]
 # n!         [LR]
 # -n         [LR]
@@ -24,10 +13,22 @@ end
 # and        [LR]
 # or         [LR]
 
-if -mean of [1,2,3]!^3*4E 2/5%6+7-8 eq ((((((((-((mean of [1,2,3])!))^3)*4)E 2)/5)%6)+7)-8) do
-    write "OK2"
+start
+
+# Test de validez de los operadores
+
+number p1 = (3! eq 6) and (--2 eq 2) and (~5 eq -6) and (2^3 eq 8) and (2**3 eq 8) and (e^1 eq 2.73)
+number p2 = (2*3 eq 6) and (2E 1 eq 20) and (2*6 eq 12) and (12/6 eq 2) and (6%4 eq 2) and (6 mod 4 eq 2)
+number p3 = (2+3 eq 5) and (3-2 eq 1) and (2<3) and (3>2) and (2<=2) and (3>=3) and (4 eq 4) and (5 neq 4)  
+
+if $p1 and $p2 and $p3 do
+    write "Operadores funcionan bien"
 end
 
-if (1 eq 0 and 0 neq 0 or 0 < 1) eq (((1 eq 0 ) and (0 neq 0)) or (0 < 1)) do
-    write "OK3"
+# Test de validez de las precedencias
+
+number p5 = -mean of [1,2,3]!^3*4E 2/5%6+7-8 eq ((((((((-((mean of [1,2,3])!))^3)*4)E 2)/5)%6)+7)-8)
+number p6 = (1 eq 0 and 0 neq 0 or 0 < 1) eq (((1 eq 0 ) and (0 neq 0)) or (0 < 1))
+if $p5 and $p6 do
+    write "Precedencias funcionan bien"
 end

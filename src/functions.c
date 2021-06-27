@@ -4,6 +4,10 @@
 #include <stdbool.h>
 #include <math.h>
 
+double absd(double x) {
+    return x > 0 ? x : -x;
+}
+
 void sort(double * arr, int size, double arg) {
     for (int i = 0; i < size - 1; i++) {
         bool swapped = false;

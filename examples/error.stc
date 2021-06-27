@@ -1,9 +1,0 @@
-start
-
-list l = [1,2]
-write l(0)      # Acá funciona
-
-while 2 do
-    write "OK"
-end
-write l(0)      # Acá tira not declared
