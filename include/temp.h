@@ -26,3 +26,9 @@ int gcd(double * list, int size);
 int mcm(double * list, int size);
 
 double print_array(double * list_var, int size);
+
+double factorial(double input);
+
+double permutation(double n,double r);
+
+double combination(double n,double r);
