@@ -122,9 +122,13 @@ void check_and_set_variables_rec(node_t * node,var_node ** var_list){
                     case TEXT_NODE:
                     //va vacio porque no hay variables aca dentro
                         break;
+
+                    case ARRAY_NODE:
+                    //va vacio porque no hay variables aca dentro
+                        break;
                     
                     default:
-                        #ifdef YYDEBUG
+                        #if YYDEBUG == 1
                         printf("Algo salio mal var checker print_node\n");
                         #endif
                         break;
@@ -145,7 +149,7 @@ void check_and_set_variables_rec(node_t * node,var_node ** var_list){
                         break;         
                     
                     default:
-                        #ifdef YYDEBUG
+                        #if YYDEBUG == 1
                         printf("Algo salio mal var checker read_node\n");
                         #endif
                         break;
@@ -183,7 +187,7 @@ void check_and_set_variables_rec(node_t * node,var_node ** var_list){
                 //  *var_list=free_list(*var_list);
                 break;
             default:
-                #ifdef YYDEBUG
+                #if YYDEBUG == 1
                 printf("Algo salio mal var checker\n");
                 #endif
                 break;
@@ -228,7 +232,7 @@ void check_var_types_in_value(variable_node* variable_node_var,var_node * var_li
             
             break;
         default:
-            #ifdef YYDEBUG
+            #if YYDEBUG == 1
             printf("Algo salio mal var checker types in value\n");
             #endif
             break;
@@ -285,7 +289,7 @@ int check_var_type_in_expression_rec(int type,node_t * node,var_node * var_list)
             return type==NUMBER_TYPE;
             break;
         default:
-            #ifdef YYDEBUG
+            #if YYDEBUG == 1
             printf("Algo salio mal var checker expression rec\n");
             #endif
             break;
@@ -314,7 +318,7 @@ int check_var_type_in_list_op(int type,list_op_node * node,var_node * var_list){
             break;
         
         default:
-            #ifdef YYDEBUG
+            #if YYDEBUG == 1
             printf("Algo salio mal var checker func call\n");
             #endif
             break;
@@ -336,9 +340,7 @@ var_node * create_var_node(int type, char * name){
 
 void add_to_list(var_node ** list,var_node * element){
     if (*list!=NULL){
-        (*list)->references++;
         element->next=*list;
-        
     }
     *list=element;
 
@@ -351,7 +353,7 @@ var_node * free_list(var_node * list){
     }
     
     var_node * current=list;
-    while (current!=NULL && current->references<=1)
+    while (current!=NULL && current->references<1)
     {
         var_node * next=current->next;
         free(current);

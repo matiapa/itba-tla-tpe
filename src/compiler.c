@@ -14,6 +14,11 @@ extern FILE * yyin;
 FILE * out;
 node_list * program;
 
+#define ERROR(...) fprintf(stderr, "\033[38;2;255;0;0mERROR: ");\
+    fprintf(stderr, ##__VA_ARGS__);\
+    fprintf(stderr, "\x1b[0m\n");\
+    ;
+
 int main(int argc, char ** argv) {
 
     if (argc == 1) {
@@ -61,7 +66,7 @@ int main(int argc, char ** argv) {
 }
 
 void yyerror(node_list ** param, char *s){
-    printf("%s at line %d\n", s, yylineno);
+    ERROR("%s at line %d", s, yylineno);
 
     free_tree(program);
 

@@ -26,7 +26,7 @@ void free_operation_node(node_t * node);
 
 void read_tree(node_list * program, FILE * file) {
     
-    #ifdef YYDEBUG
+    #if YYDEBUG == 1
     printf("Empezando con el translate de código\n");
     #endif
     output = file;
@@ -56,7 +56,7 @@ void read_instruction_list(node_list * list) {
                 print_while_node(nodo->instruction);
                 break;
             default:
-                #ifdef YYDEBUG
+                #if YYDEBUG == 1
                 printf("Algo salio mal\n");
                 #endif
                 break;

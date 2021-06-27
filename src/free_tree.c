@@ -70,7 +70,7 @@ void * free_instruction_node(node_t * node) {
             free_while_node(nodo->instruction);
             break;
         default:
-            #ifdef YYDEBUG
+            #if YYDEBUG == 1
             printf("Algo salio mal\n");
             #endif                
             break;
