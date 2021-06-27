@@ -41,7 +41,7 @@ int reduced = 0;
 %token START EOL FIN
 %token COMB PERM 
 %token MEAN MEDIAN MODE STDEV RANGE QTR1 QTR3 INTER_QTR IN
-%token ASSIGN WRITE READ
+%token ASSIGN WRITE READ SIZE
 
 %token <string> IF WHILE DO END ELSE
 %token <string> SYMBOL_NAME
@@ -53,8 +53,8 @@ int reduced = 0;
 %token <number> NATURAL
 
 %type <number> type
-%type <node> full_declare declare assign value expression list_operation list_value
-%type <node> instruction write read if if_end while
+%type <node> full_declare list_declare declare assign value expression list_operation list_value
+%type <node> instruction write read if if_end while list_mutate
 %type <list> program block
 
 %nonassoc IN
@@ -70,24 +70,27 @@ program: instruction program { $$ = (*program = (node_list *)add_element_to_list
     | EOL program { $$ = $2; }
     | FIN { $$ = (*program = (node_list *)add_instruction_list_node(NULL)); };
 
-instruction: full_declare { $$ = add_instruction_node($1); }
-    | assign    { $$ = add_instruction_node($1); }
-    | write     { if (main_init == FALSE) {
-                    $$ = free_write($1); 
-                    warning("write");
-                  } else $$ = add_instruction_node($1); }
-    | read      { if (main_init == FALSE) {
-                    $$ = free_read($1);
-                    warning("read");
-                  } else $$ = add_instruction_node($1); }
-    | if        { if (main_init == FALSE) {
-                    $$ = free_if_node($1);
-                    warning("if");
-                  } else $$ = add_instruction_node($1); }
-    | while     { if (main_init == FALSE) {
-                    $$ = free_while_node($1);
-                  } else $$ = add_instruction_node($1); }
-    | START     { main_init=TRUE; $$=NULL; };
+instruction:
+    full_declare    { $$ = add_instruction_node($1); }
+    | list_declare  { $$ = add_instruction_node($1); }
+    | assign        { $$ = add_instruction_node($1); }
+    | list_mutate   { $$ = add_instruction_node($1); }
+    | write         { if (main_init == FALSE) {
+                        $$ = free_write($1); 
+                        warning("write");
+                    } else $$ = add_instruction_node($1); }
+    | read          { if (main_init == FALSE) {
+                        $$ = free_read($1);
+                        warning("read");
+                    } else $$ = add_instruction_node($1); }
+    | if            { if (main_init == FALSE) {
+                        $$ = free_if_node($1);
+                        warning("if");
+                    } else $$ = add_instruction_node($1); }
+    | while         { if (main_init == FALSE) {
+                        $$ = free_while_node($1);
+                    } else $$ = add_instruction_node($1); }
+    | START         { main_init=TRUE; $$=NULL; };
 
 block: instruction block { $$ = (node_list *)add_element_to_list($2, $1); }
     | EOL block { $$ = $2; }
@@ -102,17 +105,22 @@ if_end: END { $$ = NULL; }
     | ELSE block END { $$ = add_block_node($2); };
     
 full_declare: declare               { $$ = $1; }
-    | declare ASSIGN value          { $$ = add_value_variable($1, $3); }
-    | LIST_TYPE SYMBOL_NAME ASSIGN value { $$ = add_value_variable(declare_variable_node($2, $1), $4); };
+    | declare ASSIGN value          { $$ = add_value_variable($1, $3); };
 
 declare: type SYMBOL_NAME           { $$ = declare_variable_node($2, $1); };
-type: NUMBER_TYPE | TEXT_TYPE | BOOLEAN_TYPE ;
+type: NUMBER_TYPE | TEXT_TYPE       ;
 
 assign: SYMBOL_NAME ASSIGN value { $$ = assign_variable_node($1, $3); };
 value: expression   { $$ = $1; }
     | SYMBOL_NAME   { $$ = add_variable_reference($1); }
-    | TEXT          { $$ = add_text_node($1); }
-    | LIST          { $$ = add_array_node($1); };
+    | TEXT          { $$ = add_text_node($1);   }
+    | LIST          { $$ = add_array_node($1);  };
+
+list_declare:
+    LIST_TYPE SYMBOL_NAME SIZE NUMBER       { $$ = add_value_variable(declare_variable_node($2, $1), add_number_node($4)); }
+    | LIST_TYPE SYMBOL_NAME ASSIGN value    { $$ = add_value_variable(declare_variable_node($2, $1), $4); };
+
+list_mutate: SYMBOL_NAME '(' expression ')' ASSIGN expression { $$ = add_list_mutation_node($1, $3, $6); };
 
 write: WRITE expression                     { $$ = add_print_node($2); }
     | WRITE SYMBOL_NAME                     { $$ = add_print_node(add_variable_reference($2)); }
@@ -146,3 +154,4 @@ void warning(char * s) {
     extern int yylineno;
     WARNING("%s at line %d, will not be considered.", s, yylineno);
 }
+

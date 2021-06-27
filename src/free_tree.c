@@ -69,6 +69,8 @@ void * free_instruction_node(node_t * node) {
         case WHILE_NODE:
             free_while_node(nodo->instruction);
             break;
+        case LIST_MUTATION_NODE:
+            free_list_mutation_node(nodo->instruction);
         default:
             #if YYDEBUG == 1
             printf("Algo salio mal\n");
@@ -243,5 +245,15 @@ void * free_list_op(node_t * node) {
     free(lop->operator);
     free_expression(lop->arg);
     free(node);
+    return NULL;
+}
+
+void * free_list_mutation_node(node_t * node) {
+    list_mutation_node * lm = (list_mutation_node *) node;
+
+    free(lm->list_name);
+    free_expression(lm->pos_exp);
+    free_expression(lm->value_exp);
+
     return NULL;
 }

@@ -28,6 +28,7 @@ boolean    { yylval.number = BOOLEAN_TYPE; return BOOLEAN_TYPE; }
 list       { yylval.number = LIST_TYPE; return LIST_TYPE; }
 write      { return WRITE; }
 read       { return READ; }
+size       { return SIZE; }
 
 
 \"[^\"]+\"                                          { strcpy(yylval.string, yytext); return TEXT; }

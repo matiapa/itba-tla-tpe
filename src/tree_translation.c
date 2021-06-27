@@ -20,6 +20,7 @@ void read_instruction_list(node_list * list);
 void print_if_node(node_t * node);
 void print_while_node(node_t * node);
 void print_list_op(node_t * node);
+void print_list_mutation_node(node_t * node);
 void free_text_node(node_t * node);
 void free_number_node(node_t * node);
 void free_operation_node(node_t * node);
@@ -55,6 +56,8 @@ void read_instruction_list(node_list * list) {
             case WHILE_NODE:
                 print_while_node(nodo->instruction);
                 break;
+            case LIST_MUTATION_NODE:
+                print_list_mutation_node(nodo->instruction);
             default:
                 #if YYDEBUG == 1
                 printf("Algo salio mal\n");
@@ -82,9 +85,11 @@ void print_var(node_t * node) {
                 P("char * %s", var->name);
                 break;
             case LIST_TYPE:
-                if (var->value == NULL || var->value->type == VARIABLE_NODE) {
+                if (var->value->type == VARIABLE_NODE) {
                     P("double * %s", var->name);
-                } else {
+                } else if (var->value->type == NUMBER_NODE) {
+                    P("double %s[%s]", var->name, ((number_node *) var->value)->number);
+                } else if (var->value->type == ARRAY_NODE) {
                     P("double %s[]", var->name);
                 }
                 break;
@@ -102,7 +107,11 @@ void print_var(node_t * node) {
 
     if (var->value != NULL) {
         P(" = ");
-        if (var->value->type == EXPRESSION_NODE) {
+        if (var->var_type == LIST_TYPE && var->value->type == NUMBER_NODE) {
+            number_node * num_node = (number_node *) var->value;
+            P("{0}");
+            free(num_node->number);
+        } else if (var->value->type == EXPRESSION_NODE) {
             print_expression(var->value);
         } else if (var->value->type == TEXT_NODE) {
             text_node * text = (text_node *) var->value;
@@ -386,4 +395,18 @@ void print_list_op(node_t * node) {
     free(lop->list);
     free(lop->operator);
     free(lop->arg);
+}
+
+void print_list_mutation_node(node_t * node) {
+    list_mutation_node * lm = (list_mutation_node *) node;
+
+    P("%s[(int) (", lm->list_name);
+    print_expression(lm->pos_exp);
+    P(")] = ")
+    print_expression(lm->value_exp);
+    P(";\n")
+
+    free(lm->list_name);
+    free(lm->pos_exp);
+    free(lm->value_exp);
 }

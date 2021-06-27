@@ -19,7 +19,8 @@ typedef enum {
   INSTRUCTION_NODE,
   NEGATION_NODE,
   EXPRESSION_NODE,
-  LIST_OP_NODE
+  LIST_OP_NODE,
+  LIST_MUTATION_NODE
 } node_type;
 
 typedef struct node_s {
@@ -109,6 +110,14 @@ typedef struct operation_node {
     char * operation;
 } operation_node;
 
+typedef struct list_mutation_node {
+    node_type type;
+    char * list_name;
+    node_t * pos_exp;     // EXPRESSION_NODE
+    node_t * value_exp;   // EXPRESSION_NODE
+} list_mutation_node;
+
+
 node_t * declare_variable_node(char * name, int var_type);
 node_t * add_value_variable(node_t * var_node, node_t * expression);
 node_t * assign_variable_node(char * name, node_t * expression);
@@ -131,6 +140,8 @@ node_t * add_while_node(node_t * condition, node_t * block);
 node_t * add_operation_node(char * operation);
 
 node_t * add_list_operation(char * operator, node_t * list, node_t * arg);
+
+node_t * add_list_mutation_node(char * list_name, node_t * pos_exp, node_t * value_exp);
 
 #endif
 

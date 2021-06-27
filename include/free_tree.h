@@ -18,6 +18,6 @@ void * free_instruction_node(node_t * node);
 void * free_tree(node_list * program);
 void * free_list_op(node_t * node);
 void * free_array_node(node_t * node);
-
+void * free_list_mutation_node(node_t * node);
 
 #endif

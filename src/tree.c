@@ -287,3 +287,21 @@ node_t * add_while_node(node_t * condition, node_t * block) {
     new->type = WHILE_NODE;
     return (node_t *)new;
 }
+
+node_t * add_list_mutation_node(char * list_name, node_t * pos_exp, node_t * value_exp) {
+    list_mutation_node * node = calloc(1, sizeof(list_mutation_node));
+
+    node->pos_exp = pos_exp;
+    node->value_exp = value_exp;
+    node->type = LIST_MUTATION_NODE;
+
+    node->list_name = malloc(strlen(list_name) + 1);
+    if (node->list_name == NULL) {
+        free(node);
+        printf("Hubo un error en el malloc");
+        return NULL;
+    }
+    strcpy(node->list_name, list_name);
+
+    return (node_t *)node;
+}
