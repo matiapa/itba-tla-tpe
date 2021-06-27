@@ -93,7 +93,7 @@ void check_and_set_variables_rec(node_t * node,var_node ** var_list){
                     
                     if (type==-1)
                     {
-                        printf("Var %s not declared yet \n",variable_node_var->name);
+                        printf("Var %s is not declared yet\n",variable_node_var->name);
                         error=-1;
                     }
                     variable_node_var->var_type=type;
@@ -227,7 +227,7 @@ void check_var_types_in_value(int type,variable_node* variable_node_var,var_node
             int type =check_if_exists(var_list,((variable_node *)variable_node_var->value)->name);
             if (type==-1)
             {
-                printf("Var %s not declared yet \n",variable_node_var->name);
+                printf("Var %s not declared yet \n",((variable_node *)variable_node_var->value)->name);
                 error=-1;
             }if (variable_node_var->var_type==0)
             {
