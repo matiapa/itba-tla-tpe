@@ -10,4 +10,4 @@ write median of l1
 write stdev of l1
 write qtr1 of l1
 write qtr3 of l1
-write inter_qtr of l1
+write iqtr of l1
