@@ -223,8 +223,10 @@ void check_var_types_in_value(int type,variable_node* variable_node_var,var_node
             {
                 printf("Var %s not declared yet \n",variable_node_var->name);
                 error=-1;
+            }if (variable_node_var->var_type==0)
+            {
+                variable_node_var->var_type=type;
             }
-            variable_node_var->var_type=type;
             if (type!=variable_node_var->var_type)
             {
                printf("Var %s is different type than %s \n",variable_node_var->name,((variable_node *)variable_node_var->value)->name);
