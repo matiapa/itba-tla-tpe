@@ -25,7 +25,7 @@ void check_and_set_variables_internal(node_list * tree,var_node ** var_list);
 var_node * free_list(var_node * list);
 int check_if_exists(var_node * list,char * name);
 void check_and_set_variables_rec(node_t * node,var_node ** var_list);
-void check_var_types_in_value(variable_node* variable_node_var,var_node * var_list );
+void check_var_types_in_value(int type,variable_node* variable_node_var,var_node * var_list );
 int check_var_type_in_expression(int type,expression_node * expr,var_node * var_list);
 int check_var_type_in_expression_rec(int type,node_t * node,var_node * var_list);
 int check_var_type_in_list_op(int type,list_op_node * node,var_node * var_list);
@@ -73,7 +73,7 @@ void check_and_set_variables_rec(node_t * node,var_node ** var_list){
                     }
                     add_to_list(var_list,create_var_node(variable_node_var->var_type,variable_node_var->name));
                     
-                    check_var_types_in_value(variable_node_var,*var_list);
+                    check_var_types_in_value(variable_node_var->var_type,variable_node_var,*var_list);
                 }
                 if (variable_node_var->declared==TRUE && variable_node_var->value==NULL){ //caso donde se define la var y no se asigna
                     if (check_if_exists(*var_list,variable_node_var->name)!=-1)
@@ -91,7 +91,7 @@ void check_and_set_variables_rec(node_t * node,var_node ** var_list){
                             error=-1;
                         }
                         variable_node_var->var_type=type;
-                        check_var_types_in_value(variable_node_var,*var_list);
+                        check_var_types_in_value(type,variable_node_var,*var_list);
                 }
                 if (variable_node_var->declared==FALSE && variable_node_var->value==NULL){ //caso donde solo se usa la var
                     
@@ -195,7 +195,7 @@ void check_and_set_variables_rec(node_t * node,var_node ** var_list){
         }
 }
 
-void check_var_types_in_value(variable_node* variable_node_var,var_node * var_list ){
+void check_var_types_in_value(int type,variable_node* variable_node_var,var_node * var_list ){
 
     switch (variable_node_var->value->type){
         case TEXT_NODE:
@@ -211,7 +211,7 @@ void check_var_types_in_value(variable_node* variable_node_var,var_node * var_li
             }
             break;
         case EXPRESSION_NODE:
-            if (!check_var_type_in_expression(NUMBER_TYPE,(expression_node*)variable_node_var->value,var_list)){
+            if (!check_var_type_in_expression(type,(expression_node*)variable_node_var->value,var_list)){
                 printf("Var %s is of type number and assigned not number\n",variable_node_var->name);
                 error=-1;
             }
@@ -272,9 +272,13 @@ int check_var_type_in_expression_rec(int type,node_t * node,var_node * var_list)
             return type_var==type;
             break;
         case TEXT_NODE:
+            return TEXT_TYPE==type;
+            break;
         case NUMBER_NODE:
+            return NUMBER_TYPE==type;
+            break;
         case OPERATION_NODE:
-            return TRUE;
+            return NUMBER_TYPE==type;
             break;
         case EXPRESSION_NODE:
             return check_var_type_in_expression(type,(expression_node *)node,var_list);
