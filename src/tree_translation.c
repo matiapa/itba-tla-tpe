@@ -76,7 +76,7 @@ void print_var(node_t * node) {
     variable_node * var = (variable_node *) node;
 
     if (var->declared == TRUE) {
-        // Es una declaracion
+        // Es una declaración
         switch(var->var_type) {
             case NUMBER_TYPE:
                 P("double %s", var->name);
@@ -100,11 +100,12 @@ void print_var(node_t * node) {
                 break;
         }
     } else {
-        // Es una asignacion/referenciacion
+        // Es una asignacion/referenciación
         P("%s", (var->name));
     }
     free(var->name);
 
+    // si la variable esta asignada
     if (var->value != NULL) {
         P(" = ");
         if (var->var_type == LIST_TYPE && var->value->type == NUMBER_NODE) {
@@ -134,6 +135,7 @@ void print_var(node_t * node) {
 
 void print_print(node_t * node) {
     print_node * print = (print_node *) node;
+    // dependiendo del tipo de contenido del print se corre una función distinta
     switch(print->content->type) {
         case VARIABLE_NODE:
             ;
@@ -172,7 +174,7 @@ void print_print(node_t * node) {
 
 void print_read(node_t * node) {
     read_node * read = (read_node *) node;
-    
+    // solo se puede leer tipos númericos
     switch(read->content->type) {
         case VARIABLE_NODE:
             ;
@@ -220,8 +222,8 @@ void switch_print_expression(node_t * node) {
 }
 
 int print_binary_operation(node_t * first, operation_node * second, node_t * third) {
-
-    if (strcmp(second->operation, "%") == 0) {
+    
+    if (strcmp(second->operation, "%") == 0) { // si la operación es de modulo
         P("(int) (");
         if (first != NULL) {
             switch_print_expression(first);
@@ -239,7 +241,7 @@ int print_binary_operation(node_t * first, operation_node * second, node_t * thi
         }
         P(")");
         return 1;
-    } else if (strcmp(second->operation, "^") == 0) {
+    } else if (strcmp(second->operation, "^") == 0) { // si la operación es de potencia
         P(" pow(");
         if (first != NULL) {
             switch_print_expression(first);
@@ -253,7 +255,7 @@ int print_binary_operation(node_t * first, operation_node * second, node_t * thi
         }
         P(") ");
         return 1;
-    } else if (strcmp(second->operation, "E ") == 0) {
+    } else if (strcmp(second->operation, "E ") == 0) { // si la operación es potencia de 10
         if (first != NULL) {
             switch_print_expression(first);
             free(first);
@@ -267,7 +269,7 @@ int print_binary_operation(node_t * first, operation_node * second, node_t * thi
         }
         P(") ");
         return 1;
-    } else if (strcmp(second->operation, "comb") == 0) {
+    } else if (strcmp(second->operation, "comb") == 0) { // si la operación es de combinatoria
         P("combination(");
         if (first != NULL) {
             switch_print_expression(first);
@@ -281,7 +283,7 @@ int print_binary_operation(node_t * first, operation_node * second, node_t * thi
         }
         P(") ");
         return 1;
-    } else if (strcmp(second->operation, "perm") == 0) {
+    } else if (strcmp(second->operation, "perm") == 0) { // si la operación es de permutación
         P("permutation(");
         if (first != NULL) {
             switch_print_expression(first);
@@ -295,7 +297,7 @@ int print_binary_operation(node_t * first, operation_node * second, node_t * thi
         }
         P(") ");
         return 1;
-    } else if (strcmp(second->operation, "!") == 0) {
+    } else if (strcmp(second->operation, "!") == 0) { // si la operación es de factorial
         P("factorial(");
         if (first != NULL) {
             switch_print_expression(first);
@@ -304,7 +306,7 @@ int print_binary_operation(node_t * first, operation_node * second, node_t * thi
         P(") ");
         free_operation_node((node_t *)second);
         return 1;
-    } else if (strcmp(second->operation, "==") == 0) {
+    } else if (strcmp(second->operation, "==") == 0) { // si la operación es de igualdad
         P("(absd((");
         if (first != NULL) {
             switch_print_expression(first);
@@ -324,23 +326,17 @@ int print_binary_operation(node_t * first, operation_node * second, node_t * thi
 
 }
 
-int print_unary_operation(operation_node * first, node_t * second, node_t * third) {
-    
-    return 0;
-}
-
 void print_expression(node_t * exp) {
     expression_node * node = (expression_node *)exp;
     int op = 0;
 
-    if (node->first != NULL && node->first->type == OPERATION_NODE) {
-        op = print_unary_operation((operation_node *)node->first, node->second, node->third);
-    } 
-
+    // si la expression es una operación binaria
     if (node->second != NULL && node->second->type == OPERATION_NODE) {
+        // si la operación es binaria y requiere una traducción especial
         op = print_binary_operation(node->first, (operation_node *)node->second, node->third);
     } 
     
+    // caso contrario
     if (!op) {
 
         if (node->first != NULL) {
@@ -363,15 +359,19 @@ void print_expression(node_t * exp) {
 void print_if_node(node_t * node) {
     if_node * aux = (if_node *)node;
     P("if (");
+    // se imprime la expression
     print_expression(aux->condition);
     free(aux->condition);
     P(") {\n");
     block_node * block = (block_node *)aux->then;
+    // se imprime la lista de instrucciones dentro del bloque del then del if
     read_instruction_list((node_list *)block->node_list);
     free(block);
+    // si tiene un else
     if (aux->otherwise != NULL) {
         P("\n} else {\n");
         block = (block_node *)aux->otherwise;
+        // se imprime la lista de instrucciones dentro del bloque del otherwise del if
         read_instruction_list((node_list *)block->node_list);
         free(block);
     }
@@ -381,10 +381,12 @@ void print_if_node(node_t * node) {
 void print_while_node(node_t * node) {
     while_node * aux = (while_node *)node;
     P("while (");
+    // se imprime la expression
     print_expression(aux->condition);
     free(aux->condition);
     P(") {\n");
     block_node * block = (block_node *)aux->then;
+    // se imprime la lista de instrucciones dentro del bloque del then del while
     read_instruction_list((node_list *)block->node_list);
     free(block);
     P("}\n");
@@ -395,6 +397,7 @@ void print_list_op(node_t * node) {
 
     if (lop->list->type == ARRAY_NODE) {
         char * str = ((array_node *) lop->list)->array;
+        // se imprime la llamada a función de la operación que se pidio
         P("str_caller(\"%s\", (", str);
         print_expression(lop->arg);
         P("), %s)", lop->operator);

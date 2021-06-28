@@ -1,0 +1,20 @@
+start
+
+number n
+write "Ingrese un número"
+read n
+
+number is_prime = 1
+number i = 2
+while $i <= $n^0.5 and $is_prime do
+    if $n mod $i eq 0 do
+        is_prime = 0
+    end
+    i = $i + 1
+end
+
+if $is_prime do
+    write "Es primo"
+else
+    write "No es primo"
+end

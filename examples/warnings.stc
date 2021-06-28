@@ -1,0 +1,9 @@
+number n
+n = 2
+
+write "Esto será ignorado"
+read n
+
+start
+n = "Inválido"
+n = invalido
